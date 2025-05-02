@@ -21,7 +21,6 @@
                         </div>
                         <h2 class="login-title">Sign Up</h2>
                         
-                        <!-- Role Selection Toggle -->
                         <div class="role-selector mb-4">
                             <div class="role-option active" data-role="user">
                                 <i class="fas fa-user"></i>
@@ -74,6 +73,10 @@
                                     <label for="specialization">Specialization</label>
                                 </div>
                                 <div class="form-floating">
+                                    <input type="text" class="form-control" id="Location" name="Location" placeholder="Location">
+                                    <label for="Location">Location</label>
+                                </div>
+                                <div class="form-floating">
                                     <input type="text" class="form-control" id="experience" name="experience" placeholder="Years of Experience">
                                     <label for="experience">Years of Experience</label>
                                 </div>
@@ -112,33 +115,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
     
-    <script>
-        $(document).ready(function() {
-            // Role selection toggle
-            $('.role-option').click(function() {
-                // Remove active class from all options
-                $('.role-option').removeClass('active');
-                
-                // Add active class to clicked option
-                $(this).addClass('active');
-                
-                // Get selected role
-                const selectedRole = $(this).data('role');
-                
-                // Update hidden input value
-                $('#selected_role').val(selectedRole);
-                
-                // Hide all role-specific fields
-                $('#mechanic-fields, #admin-fields').hide();
-                
-                // Show fields based on selected role
-                if (selectedRole === 'mechanic') {
-                    $('#mechanic-fields').show();
-                } else if (selectedRole === 'admin') {
-                    $('#admin-fields').show();
-                }
-            });
-        });
-    </script>
 </body>
 </html>
