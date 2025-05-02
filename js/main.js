@@ -68,3 +68,17 @@ $(document).ready(function() {
         }
     });
 });
+
+$(document).ready(function() {
+    $('#toggleSidebar').click(function() {
+        $('#adminSidebar').toggleClass('show');
+    });
+    
+    $(document).click(function(event) {
+        if (!$(event.target).closest('#adminSidebar').length && 
+            !$(event.target).closest('#toggleSidebar').length && 
+            $('#adminSidebar').hasClass('show')) {
+            $('#adminSidebar').removeClass('show');
+        }
+    });
+});

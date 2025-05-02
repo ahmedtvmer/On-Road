@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/main.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
 </head>
 <body>
     <section class="login-section">
@@ -21,7 +20,27 @@
                             <i class="fas fa-user-plus"></i>
                         </div>
                         <h2 class="login-title">Sign Up</h2>
+                        
+                        <!-- Role Selection Toggle -->
+                        <div class="role-selector mb-4">
+                            <div class="role-option active" data-role="user">
+                                <i class="fas fa-user"></i>
+                                <span>User</span>
+                            </div>
+                            <div class="role-option" data-role="mechanic">
+                                <i class="fas fa-wrench"></i>
+                                <span>Mechanic</span>
+                            </div>
+                            <div class="role-option" data-role="admin">
+                                <i class="fas fa-user-shield"></i>
+                                <span>Admin</span>
+                            </div>
+                        </div>
+                        
                         <form id="signupForm" action="home.php" method="POST">
+                            <!-- Hidden input to store the selected role -->
+                            <input type="hidden" id="selected_role" name="role" value="user">
+                            
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Full Name" required>
                                 <label for="fullname">Full Name</label>
@@ -47,6 +66,28 @@
                                 <label for="confirm_password">Confirm Password</label>
                                 <div class="error-message" id="confirm-password-error">Passwords do not match</div>
                             </div>
+                            
+                            <!-- Mechanic-specific fields (initially hidden) -->
+                            <div id="mechanic-fields" style="display: none;">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="specialization" name="specialization" placeholder="Specialization">
+                                    <label for="specialization">Specialization</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="experience" name="experience" placeholder="Years of Experience">
+                                    <label for="experience">Years of Experience</label>
+                                </div>
+                            </div>
+                            
+                            <!-- Admin-specific fields (initially hidden) -->
+                            <div id="admin-fields" style="display: none;">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="admin_code" name="admin_code" placeholder="Admin Code">
+                                    <label for="admin_code">Admin Code</label>
+                                    <div class="error-message" id="admin-code-error">Please enter a valid admin code</div>
+                                </div>
+                            </div>
+                            
                             <div class="form-check mb-3">
                                 <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
                                 <label class="form-check-label" for="terms">
@@ -69,7 +110,35 @@
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
     
-   <script src="js/main.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Role selection toggle
+            $('.role-option').click(function() {
+                // Remove active class from all options
+                $('.role-option').removeClass('active');
+                
+                // Add active class to clicked option
+                $(this).addClass('active');
+                
+                // Get selected role
+                const selectedRole = $(this).data('role');
+                
+                // Update hidden input value
+                $('#selected_role').val(selectedRole);
+                
+                // Hide all role-specific fields
+                $('#mechanic-fields, #admin-fields').hide();
+                
+                // Show fields based on selected role
+                if (selectedRole === 'mechanic') {
+                    $('#mechanic-fields').show();
+                } else if (selectedRole === 'admin') {
+                    $('#admin-fields').show();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
