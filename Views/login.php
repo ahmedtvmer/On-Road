@@ -1,3 +1,12 @@
+<?php
+require_once '../Controllers/LoginController.php';
+
+$loginController = new LoginController();
+$loginController->processLogin();
+$error = $loginController->getError();
+$locked = $loginController->isLocked();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +28,14 @@
                             <i class="fas fa-user"></i>
                         </div>
                         <h2 class="login-title">Login</h2>
-                        <form action="home.php" method="post">
+                        
+                        <?php if (!empty($error)): ?>
+                            <div class="alert alert-danger" role="alert">
+                                <?php echo $error; ?>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" <?php if ($locked) echo 'style="pointer-events: none; opacity: 0.6;"'; ?>>
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
                                 <label for="username">Username</label>
@@ -38,7 +54,7 @@
                             <button type="submit" class="btn btn-primary login-btn">Login</button>
                         </form>
                         <div class="login-footer">
-                            <p>Don't have an account? <a href="register.html">Register</a></p>
+                            <p>Don't have an account? <a href="register.php">Register</a></p>
                         </div>
                     </div>
                 </div>

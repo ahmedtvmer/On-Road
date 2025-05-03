@@ -1,0 +1,114 @@
+<?php
+require_once '../Models/client.php';
+require_once '../Models/mechanic.php';
+require_once '../Models/admin.php';
+
+class RegisterController
+{
+    private $error;
+    
+    public function __construct()
+    {
+        $this->error = "";
+    }
+    
+    public function processRegistration()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $fullName = $_POST['fullname'] ?? '';
+            $email = $_POST['email'] ?? '';
+            $username = $_POST['username'] ?? '';
+            $password = $_POST['password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+            $selectedRole = $_POST['selected_role'] ?? 'client';
+            
+            if (empty($fullName) || empty($email) || empty($username) || empty($password)) {
+                $this->error = "All fields are required";
+                return false;
+            }
+            
+            if ($password !== $confirmPassword) {
+                $this->error = "Passwords do not match";
+                return false;
+            }
+            
+            switch ($selectedRole) {
+                case 'client':
+                    return $this->registerClient($fullName, $email, $username, $password);
+                    
+                case 'mechanic':
+                    $specialization = $_POST['specialization'] ?? '';
+                    $location = $_POST['Location'] ?? '';
+                    $experience = $_POST['experience'] ?? '';
+                    
+                    if (empty($specialization) || empty($location) || empty($experience)) {
+                        $this->error = "All mechanic fields are required";
+                        return false;
+                    }
+                    
+                    return $this->registerMechanic($fullName, $email, $username, $password, $location, $specialization, $experience);
+                    
+                case 'admin':
+                    $adminCode = $_POST['admin_code'] ?? '';
+                    
+                    if (empty($adminCode)) {
+                        $this->error = "Admin code is required";
+                        return false;
+                    }
+                    
+                    return $this->registerAdmin($fullName, $email, $username, $adminCode, $password);
+                    
+                default:
+                    $this->error = "Invalid role selected";
+                    return false;
+            }
+        }
+        
+        return false;
+    }
+    
+    private function registerClient($fullName, $email, $username, $password)
+    {
+        $client = new Client("", $fullName, $email, $username, $password);
+        
+        if ($client->register()) {
+            header("Location: login.php?registered=true");
+            exit();
+        } else {
+            $this->error = "Registration failed. Please try again.";
+            return false;
+        }
+    }
+    
+    private function registerMechanic($fullName, $email, $username, $password, $location, $specialization, $experience)
+    {
+        $mechanic = new Mechanic("", $fullName, $email, $username, $password, $location, $specialization, $experience);
+        
+        if ($mechanic->register()) {
+            header("Location: login.php?registered=true");
+            exit();
+        } else {
+            $this->error = "Registration failed. Please try again.";
+            return false;
+        }
+    }
+    
+    private function registerAdmin($fullName, $email, $username, $adminCode, $password)
+    {
+        $admin = new Admin("", $fullName, $email, $username, $adminCode, $password);
+        
+        if ($admin->register()) {
+            header("Location: login.php?registered=true");
+            exit();
+        } else {
+            $this->error = "Registration failed. Please try again.";
+            return false;
+        }
+    }
+    
+    public function getError()
+    {
+        return $this->error;
+    }
+}
+?>
