@@ -15,7 +15,7 @@ $locked = $loginController->isLocked();
     <title>On-Road | Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../root/css/main.css">
 </head>
 <body>
     <section class="login-section">
@@ -54,7 +54,7 @@ $locked = $loginController->isLocked();
                             <button type="submit" class="btn btn-primary login-btn">Login</button>
                         </form>
                         <div class="login-footer">
-                            <p>Don't have an account? <a href="register.php">Register</a></p>
+                            <p>Don't have an account? <a href="../index.php">Register</a></p>
                         </div>
                     </div>
                 </div>

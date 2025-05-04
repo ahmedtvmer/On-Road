@@ -1,5 +1,5 @@
 <?php
-require_once 'DbController.php';
+require "../Controllers/DbController.php";
 
 class Client
 {

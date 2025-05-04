@@ -1,7 +1,7 @@
 <?php
-require_once '../Models/client.php';
-require_once '../Models/mechanic.php';
-require_once '../Models/admin.php';
+require_once __DIR__ . '/../Models/client.php';
+require_once __DIR__ . '/../Models/mechanic.php';
+require_once __DIR__ . '/../Models/admin.php';
 
 class RegisterController
 {
@@ -72,7 +72,7 @@ class RegisterController
         $client = new Client("", $fullName, $email, $username, $password);
         
         if ($client->register()) {
-            header("Location: login.php?registered=true");
+            header("Location: login.php?registered=true&role=client");
             exit();
         } else {
             $this->error = "Registration failed. Please try again.";
@@ -85,7 +85,7 @@ class RegisterController
         $mechanic = new Mechanic("", $fullName, $email, $username, $password, $location, $specialization, $experience);
         
         if ($mechanic->register()) {
-            header("Location: login.php?registered=true");
+            header("Location: login.php?registered=true&role=mechanic");
             exit();
         } else {
             $this->error = "Registration failed. Please try again.";
@@ -98,7 +98,7 @@ class RegisterController
         $admin = new Admin("", $fullName, $email, $username, $adminCode, $password);
         
         if ($admin->register()) {
-            header("Location: login.php?registered=true");
+            header("Location: login.php?registered=true&role=admin");
             exit();
         } else {
             $this->error = "Registration failed. Please try again.";

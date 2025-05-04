@@ -1,5 +1,5 @@
 <?php
-require_once '../Controllers/RegisterController.php';
+require_once 'Controllers/RegisterController.php';
 
 $registerController = new RegisterController();
 $registerController->processRegistration();
@@ -14,7 +14,7 @@ $error = $registerController->getError();
     <title>On-Road | Register</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="root/css/main.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
@@ -44,8 +44,7 @@ $error = $registerController->getError();
                             </div>
                         </div>
                         
-                        <form id="signupForm" action="home.php" method="POST">
-                            <!-- Hidden input to store the selected role -->
+                        <form id="signupForm" action="Views/login.php" method="POST">
                             <input type="hidden" id="selected_role" name="role" value="user">
                             
                             <div class="form-floating">
@@ -74,7 +73,6 @@ $error = $registerController->getError();
                                 <div class="error-message" id="confirm-password-error">Passwords do not match</div>
                             </div>
                             
-                            <!-- Mechanic-specific fields (initially hidden) -->
                             <div id="mechanic-fields" style="display: none;">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="specialization" name="specialization" placeholder="Specialization">
@@ -90,7 +88,6 @@ $error = $registerController->getError();
                                 </div>
                             </div>
                             
-                            <!-- Admin-specific fields (initially hidden) -->
                             <div id="admin-fields" style="display: none;">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="admin_code" name="admin_code" placeholder="Admin Code">
@@ -112,7 +109,7 @@ $error = $registerController->getError();
                             </div>
                         </form>
                         <div class="login-footer">
-                            <p>Already have an account? <a href="login.php">Login</a></p>
+                            <p>Already have an account? <a href="Views/login.php">Login</a></p>
                         </div>
                     </div>
                 </div>
@@ -121,7 +118,7 @@ $error = $registerController->getError();
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/main.js"></script>
+    <script src="root/js/main.js"></script>
     
 </body>
 </html>
