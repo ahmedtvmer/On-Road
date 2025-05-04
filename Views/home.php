@@ -1,11 +1,6 @@
 <?php
-session_start();
-// Check if user is logged in and has the correct role
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'client') {
-    // Redirect to login page
-    header("Location: login.php");
-    exit();
-}
+require_once '../Controllers/ValidationController.php';
+ValidationController::validateSession('client');
 ?>
 <!DOCTYPE html>
 <html lang="en">

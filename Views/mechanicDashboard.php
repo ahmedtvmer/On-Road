@@ -1,9 +1,6 @@
 <?php
-session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'mechanic') {
-    header("Location: login.php");
-    exit();
-}
+require_once '../Controllers/ValidationController.php';
+ValidationController::validateSession('mechanic');
 ?>
 
 <!DOCTYPE html>
