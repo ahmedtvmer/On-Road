@@ -101,7 +101,6 @@ class Client
     
     public function register()
     {
-        // Hash the password before storing
         $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
         
         $dbController = new DBController();

@@ -34,6 +34,11 @@ class DBController
 
     public function executeQuery($query)
     {
+        if (!$this->connection) {
+            if (!$this->openConnection()) {
+                return false;
+            }
+        }
         $result=$this->connection->query($query);
         if($result)
         {

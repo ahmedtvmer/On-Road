@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const role = this.getAttribute('data-role');
             
-            if (role === 'user') {
+            if (role === 'user' || role == "") {
                 selectedRoleInput.value = 'client';
             } else {
                 selectedRoleInput.value = role;
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (selectedRoleInput.value === 'mechanic') {
             const specialization = document.getElementById('specialization').value;
-            const location = document.getElementById('Location').value;
+            const location = document.getElementById('location').value;
             const experience = document.getElementById('experience').value;
             
             if (!specialization || !location || !experience) {

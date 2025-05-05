@@ -79,7 +79,6 @@ class Admin
     
     public function setPassword($password)
     {
-        // Hash the password before setting it
         $this->password = password_hash($password, PASSWORD_DEFAULT);
     }
     
@@ -93,14 +92,13 @@ class Admin
             
             if($result && count($result) > 0)
             {
-                // Verify the password against the stored hash
-                if(password_verify($password, $result[0]['password'])) {
+                    if(password_verify($password, $result[0]['password'])) {
                     $this->id = $result[0]['id'];
                     $this->fullName = $result[0]['fullName'];
                     $this->email = $result[0]['email'];
                     $this->username = $result[0]['username'];
                     $this->adminCode = $result[0]['adminCode'];
-                    $this->password = $result[0]['password']; // Store the hashed password
+                    $this->password = $result[0]['password'];
                     
                     $dbController->closeConnection();
                     return true;

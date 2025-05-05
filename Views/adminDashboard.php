@@ -63,7 +63,7 @@ ValidationController::validateSession('admin');
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="../Controllers/LogoutController.php">
                         <i class="fas fa-sign-out-alt"></i> Sign Out
                     </a>
                 </li>

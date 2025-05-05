@@ -44,7 +44,7 @@ ValidationController::validateSession('client');
                             <li><a class="dropdown-item" href="#">Profile</a></li>
                             <li><a class="dropdown-item" href="#">Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="../Views/login.php">Sign Out</a></li>
+                            <li><a class="dropdown-item" href="../Controllers/LogoutController.php">Sign Out</a></li>
                         </ul>
                     </div>
                 </div>

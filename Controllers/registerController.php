@@ -2,10 +2,12 @@
 require_once __DIR__ . '/../Models/client.php';
 require_once __DIR__ . '/../Models/mechanic.php';
 require_once __DIR__ . '/../Models/admin.php';
+require_once __DIR__ . '/../Controllers/DbController.php';
 
 class RegisterController
 {
     private $error;
+
     
     public function __construct()
     {
@@ -14,6 +16,8 @@ class RegisterController
     
     public function processRegistration()
     {
+        $dbController = new DbController();
+
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $fullName = $_POST['fullname'] ?? '';
             $email = $_POST['email'] ?? '';
@@ -34,17 +38,48 @@ class RegisterController
             
             switch ($selectedRole) {
                 case 'client':
+                    $query = "SELECT * FROM clients WHERE username = '$username'";
+                    $result = $dbController->executeQuery($query);
+                    
+                    if ($result && count($result) > 0) {
+                        $this->error = "Username already exists";
+                        return false;
+                    }
+
+                    $query = "SELECT * FROM clients WHERE email = '$email'";
+                    $result = $dbController->executeQuery($query);
+                    
+                    if ($result && count($result) > 0) {
+                        $this->error = "Email already exists";
+                        return false;
+                    }
                     return $this->registerClient($fullName, $email, $username, $password);
                     
                 case 'mechanic':
                     $specialization = $_POST['specialization'] ?? '';
-                    $location = $_POST['Location'] ?? '';
+                    $location = $_POST['location'] ?? '';
                     $experience = $_POST['experience'] ?? '';
                     $rating = $_POST['rating']?? '';
                     $totalReviews = $_POST['total_reviews']?? '';
                     
                     if (empty($specialization) || empty($location) || empty($experience)) {
                         $this->error = "All mechanic fields are required";
+                        return false;
+                    }
+
+                    $query = "SELECT * FROM mechanics WHERE username = '$username'";
+                    $result = $dbController->executeQuery($query);
+                    
+                    if ($result && count($result) > 0) {
+                        $this->error = "Username already exists";
+                        return false;
+                    }
+
+                    $query = "SELECT * FROM mechanics WHERE email = '$email'";
+                    $result = $dbController->executeQuery($query);
+                    
+                    if ($result && count($result) > 0) {
+                        $this->error = "Email already exists";
                         return false;
                     }
                     
@@ -55,6 +90,30 @@ class RegisterController
                     
                     if (empty($adminCode)) {
                         $this->error = "Admin code is required";
+                        return false;
+                    }
+
+                    $query = "SELECT * FROM admins WHERE username = '$username'";
+                    $result = $dbController->executeQuery($query);
+                    
+                    if ($result && count($result) > 0) {
+                        $this->error = "Username already exists";
+                        return false;
+                    }
+
+                    $query = "SELECT * FROM admins WHERE email = '$email'";
+                    $result = $dbController->executeQuery($query);
+                    
+                    if ($result && count($result) > 0) {
+                        $this->error = "Email already exists";
+                        return false;
+                    }
+
+                    $query = "SELECT * FROM admins WHERE adminCode = '$adminCode'";
+                    $result = $dbController->executeQuery($query);
+                    
+                    if ($result && count($result) > 0) {
+                        $this->error = "Admin code already exists";
                         return false;
                     }
                     

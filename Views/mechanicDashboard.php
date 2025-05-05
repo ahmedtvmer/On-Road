@@ -48,7 +48,7 @@ ValidationController::validateSession('mechanic');
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="../Controllers/LogoutController.php">
                         <i class="fas fa-sign-out-alt"></i> Sign Out
                     </a>
                 </li>
@@ -60,7 +60,7 @@ ValidationController::validateSession('mechanic');
                 <button class="toggle-btn" id="toggleSidebar">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h6 class="m-0">AUTODOC BREAKDOWN ASSISTANCE</h6>
+                <h6 class="m-0">ON-RIDE BREAKDOWN ASSISTANCE</h6>
                 <div class="user-actions">
                     <a href="#" class="text-white">
                         <i class="fas fa-user-circle fs-4"></i>
