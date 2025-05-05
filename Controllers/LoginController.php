@@ -1,26 +1,26 @@
 <?php
-session_start();
 require_once '../Models/admin.php';
 require_once '../Models/client.php';
 require_once '../Models/mechanic.php';
 
 class LoginController {
     private $error = "";
-    private $locked = false;
     
-    public function __construct() {
-        if (!isset($_SESSION['login_attempts'])) {
-            $_SESSION['login_attempts'] = 0;
-        }
+    public function __construct()
+    {
+        session_start();
         
-        if (isset($_SESSION['login_attempts']) && $_SESSION['login_attempts'] >= 3) {
-            $this->locked = true;
-            $this->error = "Too many failed login attempts. Please try again later.";
+        
+        if (isset($_GET['registered']) && $_GET['registered'] === 'true') {
+            $role = isset($_GET['role']) ? $_GET['role'] : '';
+            $this->error = "Registration successful! Please login with your new credentials.";
+            return;
         }
     }
     
-    public function processLogin() {
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && !$this->locked) {
+    public function processLogin()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $username = $_POST['username'];
             $password = $_POST['password'];
             
@@ -32,9 +32,8 @@ class LoginController {
                 $_SESSION['email'] = $admin->getEmail();
                 $_SESSION['role'] = Admin::ROLE;
                 
-                $_SESSION['login_attempts'] = 0;
                 
-                header("Location: adminDashboard.php");
+                header("Location: ../Views/adminDashboard.php");
                 exit();
             }
             
@@ -46,9 +45,8 @@ class LoginController {
                 $_SESSION['email'] = $mechanic->getEmail();
                 $_SESSION['role'] = Mechanic::ROLE;
                 
-                $_SESSION['login_attempts'] = 0;
                 
-                header("Location: mechanicDashboard.php");
+                header("Location: ../Views/mechanicDashboard.php");
                 exit();
             }
             
@@ -60,28 +58,18 @@ class LoginController {
                 $_SESSION['email'] = $client->getEmail();
                 $_SESSION['role'] = Client::ROLE;
                 
-                $_SESSION['login_attempts'] = 0;
                 
-                header("Location: home.php");
+                header("Location: ../Views/home.php");
                 exit();
             }
             
-            $_SESSION['login_attempts']++;
-            $this->error = "Invalid username or password. Attempts remaining: " . (3 - $_SESSION['login_attempts']);
+            $this->error = "Invalid username or password.";
             
-            if ($_SESSION['login_attempts'] >= 3) {
-                $this->error = "Too many failed login attempts. Please try again later.";
-                $this->locked = true;
-            }
         }
     }
     
     public function getError() {
         return $this->error;
-    }
-    
-    public function isLocked() {
-        return $this->locked;
     }
     
     public function getRole() {

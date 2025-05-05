@@ -4,7 +4,6 @@ require_once '../Controllers/LoginController.php';
 $loginController = new LoginController();
 $loginController->processLogin();
 $error = $loginController->getError();
-$locked = $loginController->isLocked();
 ?>
 
 <!DOCTYPE html>
@@ -35,7 +34,7 @@ $locked = $loginController->isLocked();
                             </div>
                         <?php endif; ?>
                         
-                        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" <?php if ($locked) echo 'style="pointer-events: none; opacity: 0.6;"'; ?>>
+                        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
                                 <label for="username">Username</label>

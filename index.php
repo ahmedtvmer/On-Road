@@ -32,7 +32,7 @@ $error = $registerController->getError();
                         <div class="role-selector mb-4">
                             <div class="role-option active" data-role="user">
                                 <i class="fas fa-user"></i>
-                                <span>User</span>
+                                <span>Client</span>
                             </div>
                             <div class="role-option" data-role="mechanic">
                                 <i class="fas fa-wrench"></i>
@@ -44,8 +44,8 @@ $error = $registerController->getError();
                             </div>
                         </div>
                         
-                        <form id="signupForm" action="Views/login.php" method="POST">
-                            <input type="hidden" id="selected_role" name="role" value="user">
+                        <form id="signupForm" action="" method="POST">
+                            <input type="hidden" id="selected_role" name="selected_role" value="client">
                             
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Full Name" required>
@@ -79,13 +79,15 @@ $error = $registerController->getError();
                                     <label for="specialization">Specialization</label>
                                 </div>
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="Location" name="Location" placeholder="Location">
-                                    <label for="Location">Location</label>
+                                    <input type="text" class="form-control" id="location" name="location" placeholder="Location">
+                                    <label for="location">Location</label>
                                 </div>
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="experience" name="experience" placeholder="Years of Experience">
                                     <label for="experience">Years of Experience</label>
                                 </div>
+                                <input type="hidden" id="rating" name="rating" value="0">
+                                <input type="hidden" id="total_reviews" name="total_reviews" value="0">
                             </div>
                             
                             <div id="admin-fields" style="display: none;">
@@ -119,6 +121,86 @@ $error = $registerController->getError();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="root/js/main.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleOptions = document.querySelectorAll('.role-option');
+    const selectedRoleInput = document.getElementById('selected_role');
+    const mechanicFields = document.getElementById('mechanic-fields');
+    const adminFields = document.getElementById('admin-fields');
+    
+    roleOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            roleOptions.forEach(opt => opt.classList.remove('active'));
+            
+            this.classList.add('active');
+            
+            const role = this.getAttribute('data-role');
+            
+            if (role === 'user') {
+                selectedRoleInput.value = 'client';
+            } else {
+                selectedRoleInput.value = role;
+            }
+            
+            if (role === 'mechanic') {
+                mechanicFields.style.display = 'block';
+                adminFields.style.display = 'none';
+            } else if (role === 'admin') {
+                mechanicFields.style.display = 'none';
+                adminFields.style.display = 'block';
+            } else {
+                mechanicFields.style.display = 'none';
+                adminFields.style.display = 'none';
+            }
+        });
+    });
+    
+    const form = document.getElementById('signupForm');
+    form.addEventListener('submit', function(event) {
+        let isValid = true;
+        
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        if (password !== confirmPassword) {
+            document.getElementById('confirm-password-error').style.display = 'block';
+            isValid = false;
+        } else {
+            document.getElementById('confirm-password-error').style.display = 'none';
+        }
+        
+        if (selectedRoleInput.value === 'mechanic') {
+            const specialization = document.getElementById('specialization').value;
+            const location = document.getElementById('Location').value;
+            const experience = document.getElementById('experience').value;
+            
+            if (!specialization || !location || !experience) {
+                isValid = false;
+                alert('All mechanic fields are required');
+            }
+        }
+        
+         if (selectedRoleInput.value === 'admin') {
+            const adminCode = document.getElementById('admin_code').value;
+            
+            if (!adminCode) {
+                document.getElementById('admin-code-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('admin-code-error').style.display = 'none';
+            }
+        }
+        
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+    
+    <?php if (!empty($error)): ?>
+    document.getElementById('signup-error').textContent = "<?php echo $error; ?>";
+    document.getElementById('signup-error').style.display = 'block';
+    <?php endif; ?>
+});
+</script>
     
 </body>
 </html>

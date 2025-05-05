@@ -1,5 +1,5 @@
 <?php
-require_once 'DbController.php';
+require_once __DIR__ . "/../Controllers/DbController.php";
 
 
 class Admin
@@ -79,7 +79,8 @@ class Admin
     
     public function setPassword($password)
     {
-        $this->password = $password;
+        // Hash the password before setting it
+        $this->password = password_hash($password, PASSWORD_DEFAULT);
     }
     
     public function login($username, $password)
@@ -87,20 +88,23 @@ class Admin
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM admin WHERE username = '$username' AND password = '$password'";
+            $query = "SELECT * FROM admins WHERE username = '$username'";
             $result = $dbController->executeQuery($query);
             
             if($result && count($result) > 0)
             {
-                $this->id = $result[0]['id'];
-                $this->fullName = $result[0]['fullName'];
-                $this->email = $result[0]['email'];
-                $this->username = $result[0]['username'];
-                $this->adminCode = $result[0]['adminCode'];
-                $this->password = $result[0]['password'];
-                
-                $dbController->closeConnection();
-                return true;
+                // Verify the password against the stored hash
+                if(password_verify($password, $result[0]['password'])) {
+                    $this->id = $result[0]['id'];
+                    $this->fullName = $result[0]['fullName'];
+                    $this->email = $result[0]['email'];
+                    $this->username = $result[0]['username'];
+                    $this->adminCode = $result[0]['adminCode'];
+                    $this->password = $result[0]['password']; // Store the hashed password
+                    
+                    $dbController->closeConnection();
+                    return true;
+                }
             }
             
             $dbController->closeConnection();
@@ -111,11 +115,14 @@ class Admin
     
     public function register()
     {
+        // Hash the password before storing
+        $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+        
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "INSERT INTO admin (fullName, email, username, adminCode, password) 
-                      VALUES ('$this->fullName', '$this->email', '$this->username', '$this->adminCode', '$this->password')";
+            $query = "INSERT INTO admins (fullName, email, username, adminCode, password, role) 
+                      VALUES ('$this->fullName', '$this->email', '$this->username', '$this->adminCode', '$hashedPassword', '" . self::ROLE . "')";
             
             $result = $dbController->connection->query($query);
             
@@ -137,7 +144,7 @@ class Admin
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM admin WHERE id = $id";
+            $query = "SELECT * FROM admins WHERE id = $id";
             $result = $dbController->executeQuery($query);
             
             if($result && count($result) > 0)
@@ -164,7 +171,12 @@ class Admin
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "UPDATE admin SET 
+            // Check if password needs to be updated (if it's not already hashed)
+            if(!password_get_info($this->password)['algo']) {
+                $this->password = password_hash($this->password, PASSWORD_DEFAULT);
+            }
+            
+            $query = "UPDATE admins SET 
                       fullName = '$this->fullName', 
                       email = '$this->email',
                       username = '$this->username', 
@@ -186,7 +198,7 @@ class Admin
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "DELETE FROM admin WHERE id = $id";
+            $query = "DELETE FROM admins WHERE id = $id";
             $result = $dbController->connection->query($query);
             
             $dbController->closeConnection();
@@ -201,7 +213,7 @@ class Admin
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM admin";
+            $query = "SELECT * FROM admins";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();
@@ -231,7 +243,7 @@ class Admin
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM admin WHERE username = '$username'";
+            $query = "SELECT * FROM admins WHERE username = '$username'";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();

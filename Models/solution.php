@@ -1,0 +1,185 @@
+<?php
+require_once 'DbController.php';
+
+class Solution
+{
+    private $id;
+    private $requestId;
+    private $description;
+    
+    public function __construct($id = "", $requestId = "", $description = "")
+    {
+        $this->id = $id;
+        $this->requestId = $requestId;
+        $this->description = $description;
+    }
+    
+    // Getters
+    public function getId()
+    {
+        return $this->id;
+    }
+    
+    public function getRequestId()
+    {
+        return $this->requestId;
+    }
+    
+    public function getDescription()
+    {
+        return $this->description;
+    }
+    
+    // Setters
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+    
+    public function setRequestId($requestId)
+    {
+        $this->requestId = $requestId;
+    }
+    
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+    
+    // Database Operations
+    public function createSolution()
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "INSERT INTO solution (request_id, description) 
+                      VALUES ('$this->requestId', '$this->description')";
+            
+            $result = $dbController->connection->query($query);
+            
+            if($result)
+            {
+                $this->id = $dbController->connection->insert_id;
+                $dbController->closeConnection();
+                return true;
+            }
+            
+            $dbController->closeConnection();
+        }
+        
+        return false;
+    }
+    
+    public function getSolutionById($id)
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "SELECT * FROM solution WHERE id = $id";
+            $result = $dbController->executeQuery($query);
+            
+            if($result && count($result) > 0)
+            {
+                $this->id = $result[0]['id'];
+                $this->requestId = $result[0]['request_id'];
+                $this->description = $result[0]['description'];
+                
+                $dbController->closeConnection();
+                return true;
+            }
+            
+            $dbController->closeConnection();
+        }
+        
+        return false;
+    }
+    
+    public function updateSolution()
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "UPDATE solution SET 
+                      request_id = '$this->requestId', 
+                      description = '$this->description'
+                      WHERE id = $this->id";
+            
+            $result = $dbController->connection->query($query);
+            
+            $dbController->closeConnection();
+            return $result;
+        }
+        
+        return false;
+    }
+    
+    public function deleteSolution($id)
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "DELETE FROM solution WHERE id = $id";
+            $result = $dbController->connection->query($query);
+            
+            $dbController->closeConnection();
+            return $result;
+        }
+        
+        return false;
+    }
+    
+    public function getSolutionByRequestId($requestId)
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "SELECT * FROM solution WHERE request_id = $requestId";
+            $result = $dbController->executeQuery($query);
+            
+            if($result && count($result) > 0)
+            {
+                $this->id = $result[0]['id'];
+                $this->requestId = $result[0]['request_id'];
+                $this->description = $result[0]['description'];
+                
+                $dbController->closeConnection();
+                return true;
+            }
+            
+            $dbController->closeConnection();
+        }
+        
+        return false;
+    }
+    
+    public function getAllSolutions()
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "SELECT * FROM solution";
+            $result = $dbController->executeQuery($query);
+            
+            $dbController->closeConnection();
+            return $result;
+        }
+        
+        return false;
+    }
+    
+    public function checkSolutionExists($requestId)
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "SELECT * FROM solution WHERE request_id = $requestId";
+            $result = $dbController->executeQuery($query);
+            
+            $dbController->closeConnection();
+            return ($result && count($result) > 0);
+        }
+        
+        return false;
+    }
+}
+?>

@@ -22,8 +22,8 @@ ValidationController::validateSession('mechanic');
                 <div class="admin-avatar">
                     <img src="../root/img/avatar.png" alt="Mechanic" onerror="this.src='https://ui-avatars.com/api/?name=Vijay+Kumar&background=ff6b6b&color=fff'">
                 </div>
-                <h5 class="admin-name">Mechanic</h5>
-                <p class="admin-email">a@gmail.com</p>  
+                <h5 class="admin-name"><?php echo $_SESSION['fullname']; ?></h5>
+                <p class="admin-email"><?php echo $_SESSION['email']; ?></p>  
             </div>
             
             <ul class="sidebar-menu">

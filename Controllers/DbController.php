@@ -2,7 +2,7 @@
 
 class DBController
 {
-    public $dbHost="localhost:8080";
+    public $dbHost="localhost";
     public $dbUser="root";
     public $dbPassword="";
     public $dbName="on-road";

@@ -1,7 +1,7 @@
 <?php
 require_once 'DbController.php';
 
-class Order
+class Request
 {
     private $id;
     private $clientId;
@@ -104,12 +104,12 @@ class Order
         $this->completedAt = $completedAt;
     }
     
-    public function createOrder()
+    public function createRequest()
     {
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "INSERT INTO orders (client_id, mechanic_id, description, location, status, created_at) 
+            $query = "INSERT INTO requests (client_id, mechanic_id, description, location, status, created_at) 
                       VALUES ('$this->clientId', '$this->mechanicId', '$this->description', '$this->location', '$this->status', '$this->createdAt')";
             
             $result = $dbController->connection->query($query);
@@ -127,13 +127,13 @@ class Order
         return false;
     }
     
-    public function getOrderById($id)
+    public function getRequestById($id)
     {
 
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM orders WHERE id = $id";
+            $query = "SELECT * FROM requests WHERE id = $id";
             $result = $dbController->executeQuery($query);
             
             if($result && count($result) > 0)
@@ -157,12 +157,12 @@ class Order
         return false;
     }
     
-    public function updateOrder()
+    public function updateRequest()
     {
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "UPDATE orders SET 
+            $query = "UPDATE requests SET 
                       client_id = '$this->clientId', 
                       mechanic_id = '$this->mechanicId', 
                       description = '$this->description',
@@ -180,12 +180,12 @@ class Order
         return false;
     }
     
-    public function deleteOrder($id)
+    public function deleteRequest($id)
     {
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "DELETE FROM orders WHERE id = $id";
+            $query = "DELETE FROM requests WHERE id = $id";
             $result = $dbController->connection->query($query);
             
             $dbController->closeConnection();
@@ -195,12 +195,12 @@ class Order
         return false;
     }
     
-    public function getAllOrders()
+    public function getAllRequests()
     {
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM orders ORDER BY created_at DESC";
+            $query = "SELECT * FROM requests ORDER BY created_at DESC";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();
@@ -210,12 +210,12 @@ class Order
         return false;
     }
     
-    public function getOrdersByClientId($clientId)
+    public function getRequestsByClientId($clientId)
     {
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM orders WHERE client_id = $clientId ORDER BY created_at DESC";
+            $query = "SELECT * FROM requests WHERE client_id = $clientId ORDER BY created_at DESC";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();
@@ -225,12 +225,12 @@ class Order
         return false;
     }
     
-    public function getOrdersByMechanicId($mechanicId)
+    public function getRequestsByMechanicId($mechanicId)
     {
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM orders WHERE mechanic_id = $mechanicId ORDER BY created_at DESC";
+            $query = "SELECT * FROM requests WHERE mechanic_id = $mechanicId ORDER BY created_at DESC";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();
@@ -240,12 +240,12 @@ class Order
         return false;
     }
     
-    public function getOrdersByStatus($status)
+    public function getRequestsByStatus($status)
     {
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM orders WHERE status = '$status' ORDER BY created_at DESC";
+            $query = "SELECT * FROM requests WHERE status = '$status' ORDER BY created_at DESC";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();
@@ -259,34 +259,34 @@ class Order
     {
         $this->mechanicId = $mechanicId;
         $this->status = "assigned";
-        return $this->updateOrder();
+        return $this->updateRequest();
     }
     
     public function startService()
     {
         $this->status = "in_progress";
-        return $this->updateOrder();
+        return $this->updateRequest();
     }
     
     public function completeService()
     {
         $this->status = "completed";
         $this->completedAt = date('Y-m-d H:i:s');
-        return $this->updateOrder();
+        return $this->updateRequest();
     }
     
-    public function cancelOrder()
+    public function cancelRequest()
     {
         $this->status = "cancelled";
-        return $this->updateOrder();
+        return $this->updateRequest();
     }
     
-    public function getOrdersCount($status = null)
+    public function getRequestsCount($status = null)
     {
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT COUNT(*) as count FROM orders";
+            $query = "SELECT COUNT(*) as count FROM requests";
             if($status) {
                 $query .= " WHERE status = '$status'";
             }

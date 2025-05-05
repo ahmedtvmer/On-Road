@@ -1,5 +1,5 @@
 <?php
-require_once 'DbController.php';
+require_once __DIR__ . "/../Controllers/DbController.php";
 
 class Mechanic
 {
@@ -11,9 +11,11 @@ class Mechanic
     private $location;
     private $specialization;
     private $experience;
+    private $rating;
+    private $totalReviews;
     const ROLE = 'mechanic';
     
-    public function __construct($id = "", $fullName = "", $email = "", $username = "", $password = "", $location = "", $specialization = "", $experience = "")
+    public function __construct($id = "", $fullName = "", $email = "", $username = "", $password = "", $location = "", $specialization = "", $experience = "", $rating = 0, $totalReviews = 0)
     {
         $this->id = $id;
         $this->fullName = $fullName;
@@ -23,6 +25,8 @@ class Mechanic
         $this->location = $location;
         $this->specialization = $specialization;
         $this->experience = $experience;
+        $this->rating = $rating;
+        $this->totalReviews = $totalReviews;
     }
     
     public function getId()
@@ -87,7 +91,40 @@ class Mechanic
     
     public function setPassword($password)
     {
-        $this->password = $password;
+        $this->password = password_hash($password, PASSWORD_DEFAULT);
+    }
+    
+    public function login($username, $password)
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "SELECT * FROM mechanics WHERE username = '$username'";
+            $result = $dbController->executeQuery($query);
+            
+            if($result && count($result) > 0)
+            {
+                if(password_verify($password, $result[0]['password'])) {
+                    $this->id = $result[0]['id'];
+                    $this->fullName = $result[0]['fullName'];
+                    $this->email = $result[0]['email'];
+                    $this->username = $result[0]['username'];
+                    $this->password = $result[0]['password'];
+                    $this->location = $result[0]['location'];
+                    $this->specialization = $result[0]['specialization'];
+                    $this->experience = $result[0]['experience'];
+                    $this->rating = $result[0]['rating'] ?? 0;
+                    $this->totalReviews = $result[0]['totalReviews'] ?? 0;
+                    
+                    $dbController->closeConnection();
+                    return true;
+                }
+            }
+            
+            $dbController->closeConnection();
+        }
+        
+        return false;
     }
     
     public function setLocation($location)
@@ -105,42 +142,20 @@ class Mechanic
         $this->experience = $experience;
     }
     
-    public function login($username, $password)
-    {
-        $dbController = new DBController();
-        if($dbController->openConnection())
-        {
-            $query = "SELECT * FROM mechanic WHERE username = '$username' AND password = '$password'";
-            $result = $dbController->executeQuery($query);
-            
-            if($result && count($result) > 0)
-            {
-                $this->id = $result[0]['id'];
-                $this->fullName = $result[0]['fullName'];
-                $this->email = $result[0]['email'];
-                $this->username = $result[0]['username'];
-                $this->password = $result[0]['password'];
-                $this->location = $result[0]['location'];
-                $this->specialization = $result[0]['specialization'];
-                $this->experience = $result[0]['experience'];
-                
-                $dbController->closeConnection();
-                return true;
-            }
-            
-            $dbController->closeConnection();
-        }
-        
-        return false;
-    }
-    
     public function register()
     {
+        $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+        
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "INSERT INTO mechanic (fullName, email, username, password, location, specialization, experience) 
-                      VALUES ('$this->fullName', '$this->email', '$this->username', '$this->password', '$this->location', '$this->specialization', '$this->experience')";
+            $query = "INSERT INTO mechanics (
+                fullName, email, username, password, location, specialization, experience, rating, totalReviews, role
+            ) VALUES (
+                '{$this->fullName}', '{$this->email}', '{$this->username}', '{$hashedPassword}', '{$this->location}',
+                '{$this->specialization}', '{$this->experience}', {$this->rating}, {$this->totalReviews}, '" . self::ROLE . "'
+            )";
+    
             
             $result = $dbController->connection->query($query);
             
@@ -162,7 +177,7 @@ class Mechanic
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM mechanic WHERE id = $id";
+            $query = "SELECT * FROM mechanics WHERE id = $id";
             $result = $dbController->executeQuery($query);
             
             if($result && count($result) > 0)
@@ -175,6 +190,8 @@ class Mechanic
                 $this->location = $result[0]['location'];
                 $this->specialization = $result[0]['specialization'];
                 $this->experience = $result[0]['experience'];
+                $this->rating = $result[0]['rating'] ?? 0;
+                $this->totalReviews = $result[0]['totalReviews'] ?? 0;
                 
                 $dbController->closeConnection();
                 return true;
@@ -191,14 +208,16 @@ class Mechanic
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "UPDATE mechanic SET 
+            $query = "UPDATE mechanics SET 
                       fullName = '$this->fullName', 
                       email = '$this->email', 
                       username = '$this->username', 
                       password = '$this->password',
                       location = '$this->location',
                       specialization = '$this->specialization',
-                      experience = '$this->experience'
+                      experience = '$this->experience',
+                      rating = $this->rating,
+                      totalReviews = $this->totalReviews
                       WHERE id = $this->id";
             
             $result = $dbController->connection->query($query);
@@ -215,7 +234,7 @@ class Mechanic
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "DELETE FROM mechanic WHERE id = $id";
+            $query = "DELETE FROM mechanics WHERE id = $id";
             $result = $dbController->connection->query($query);
             
             $dbController->closeConnection();
@@ -230,7 +249,7 @@ class Mechanic
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM mechanic";
+            $query = "SELECT * FROM mechanics";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();
@@ -245,7 +264,7 @@ class Mechanic
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM mechanic WHERE location LIKE '%$location%'";
+            $query = "SELECT * FROM mechanics WHERE location LIKE '%$location%'";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();
@@ -260,7 +279,7 @@ class Mechanic
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM mechanic WHERE specialization LIKE '%$specialization%'";
+            $query = "SELECT * FROM mechanics WHERE specialization LIKE '%$specialization%'";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();
@@ -275,7 +294,7 @@ class Mechanic
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM mechanic WHERE username = '$username'";
+            $query = "SELECT * FROM mechanics WHERE username = '$username'";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();
@@ -290,7 +309,7 @@ class Mechanic
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM mechanic WHERE email = '$email'";
+            $query = "SELECT * FROM mechanics WHERE email = '$email'";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();
@@ -303,6 +322,51 @@ class Mechanic
     public function getRole()
     {
         return self::ROLE;
+    }
+    
+    public function getRating()
+    {
+        return $this->rating;
+    }
+    
+    public function getTotalReviews()
+    {
+        return $this->totalReviews;
+    }
+    
+    public function setRating($rating)
+    {
+        $this->rating = $rating;
+    }
+    
+    public function setTotalReviews($totalReviews)
+    {
+        $this->totalReviews = $totalReviews;
+    }
+    
+    public function addReview($reviewRating)
+    {
+        $currentTotalPoints = $this->rating * $this->totalReviews;
+        $newTotalPoints = $currentTotalPoints + $reviewRating;
+        $this->totalReviews++;
+        $this->rating = $this->totalReviews > 0 ? $newTotalPoints / $this->totalReviews : 0;
+        
+        return $this->updateMechanic();
+    }
+    
+    public function getTopRatedMechanics($limit = 5)
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "SELECT * FROM mechanics WHERE totalReviews > 0 ORDER BY rating DESC LIMIT $limit";
+            $result = $dbController->executeQuery($query);
+            
+            $dbController->closeConnection();
+            return $result;
+        }
+        
+        return false;
     }
 }
 ?>

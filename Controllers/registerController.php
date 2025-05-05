@@ -40,13 +40,15 @@ class RegisterController
                     $specialization = $_POST['specialization'] ?? '';
                     $location = $_POST['Location'] ?? '';
                     $experience = $_POST['experience'] ?? '';
+                    $rating = $_POST['rating']?? '';
+                    $totalReviews = $_POST['total_reviews']?? '';
                     
                     if (empty($specialization) || empty($location) || empty($experience)) {
                         $this->error = "All mechanic fields are required";
                         return false;
                     }
                     
-                    return $this->registerMechanic($fullName, $email, $username, $password, $location, $specialization, $experience);
+                    return $this->registerMechanic($fullName, $email, $username, $password, $location, $specialization, $experience, $rating, $totalReviews);
                     
                 case 'admin':
                     $adminCode = $_POST['admin_code'] ?? '';
@@ -72,7 +74,7 @@ class RegisterController
         $client = new Client("", $fullName, $email, $username, $password);
         
         if ($client->register()) {
-            header("Location: login.php?registered=true&role=client");
+            header("Location: Views/login.php?registered=true&role=client");
             exit();
         } else {
             $this->error = "Registration failed. Please try again.";
@@ -80,25 +82,25 @@ class RegisterController
         }
     }
     
-    private function registerMechanic($fullName, $email, $username, $password, $location, $specialization, $experience)
-    {
-        $mechanic = new Mechanic("", $fullName, $email, $username, $password, $location, $specialization, $experience);
-        
-        if ($mechanic->register()) {
-            header("Location: login.php?registered=true&role=mechanic");
-            exit();
-        } else {
-            $this->error = "Registration failed. Please try again.";
-            return false;
-        }
+    private function registerMechanic($fullName, $email, $username, $password, $location, $specialization, $experience, $rating, $totalReviews)
+{
+    $mechanic = new Mechanic("", $fullName, $email, $username, $password, $location, $specialization, $experience, $rating, $totalReviews);
+    
+    if ($mechanic->register()) {
+        header("Location: Views/login.php?registered=true&role=mechanic");
+        exit();
+    } else {
+        $this->error = "Registration failed. Please try again.";
+        return false;
     }
+}
     
     private function registerAdmin($fullName, $email, $username, $adminCode, $password)
     {
         $admin = new Admin("", $fullName, $email, $username, $adminCode, $password);
         
         if ($admin->register()) {
-            header("Location: login.php?registered=true&role=admin");
+            header("Location: Views/login.php?registered=true&role=admin");
             exit();
         } else {
             $this->error = "Registration failed. Please try again.";

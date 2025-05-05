@@ -1,5 +1,5 @@
 <?php
-require "../Controllers/DbController.php";
+require_once __DIR__ . "/../Controllers/DbController.php";
 
 class Client
 {
@@ -66,7 +66,8 @@ class Client
     
     public function setPassword($password)
     {
-        $this->password = $password;
+        // Hash the password before setting it
+        $this->password = password_hash($password, PASSWORD_DEFAULT);
     }
     
     public function login($username, $password)
@@ -74,19 +75,22 @@ class Client
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM client WHERE username = '$username' AND password = '$password'";
+            $query = "SELECT * FROM clients WHERE username = '$username'";
             $result = $dbController->executeQuery($query);
             
             if($result && count($result) > 0)
             {
-                $this->id = $result[0]['id'];
-                $this->fullName = $result[0]['fullName'];
-                $this->email = $result[0]['email'];
-                $this->username = $result[0]['username'];
-                $this->password = $result[0]['password'];
-                
-                $dbController->closeConnection();
-                return true;
+                // Verify the password against the stored hash
+                if(password_verify($password, $result[0]['password'])) {
+                    $this->id = $result[0]['id'];
+                    $this->fullName = $result[0]['fullName'];
+                    $this->email = $result[0]['email'];
+                    $this->username = $result[0]['username'];
+                    $this->password = $result[0]['password']; // Store the hashed password
+                    
+                    $dbController->closeConnection();
+                    return true;
+                }
             }
             
             $dbController->closeConnection();
@@ -97,11 +101,14 @@ class Client
     
     public function register()
     {
+        // Hash the password before storing
+        $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+        
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "INSERT INTO client (fullName, email, username, password) 
-                      VALUES ('$this->fullName', '$this->email', '$this->username', '$this->password')";
+            $query = "INSERT INTO clients (fullName, email, username, password, role) 
+                      VALUES ('$this->fullName', '$this->email', '$this->username', '$hashedPassword', '" . self::ROLE . "')";
             
             $result = $dbController->connection->query($query);
             
@@ -110,6 +117,11 @@ class Client
                 $this->id = $dbController->connection->insert_id;
                 $dbController->closeConnection();
                 return true;
+            }
+            else
+            {
+                // Add this to see database errors
+                echo "Database Error: " . $dbController->connection->error;
             }
             
             $dbController->closeConnection();
@@ -123,7 +135,7 @@ class Client
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM client WHERE id = $id";
+            $query = "SELECT * FROM clients WHERE id = $id";
             $result = $dbController->executeQuery($query);
             
             if($result && count($result) > 0)
@@ -149,7 +161,12 @@ class Client
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "UPDATE client SET 
+            // Check if password needs to be updated (if it's not already hashed)
+            if(!password_get_info($this->password)['algo']) {
+                $this->password = password_hash($this->password, PASSWORD_DEFAULT);
+            }
+            
+            $query = "UPDATE clients SET 
                       fullName = '$this->fullName', 
                       email = '$this->email', 
                       username = '$this->username', 
@@ -170,7 +187,7 @@ class Client
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "DELETE FROM client WHERE id = $id";
+            $query = "DELETE FROM clients WHERE id = $id";
             $result = $dbController->connection->query($query);
             
             $dbController->closeConnection();
@@ -185,7 +202,7 @@ class Client
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM client";
+            $query = "SELECT * FROM clients";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();
@@ -200,7 +217,7 @@ class Client
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM client WHERE username = '$username'";
+            $query = "SELECT * FROM clients WHERE username = '$username'";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();
@@ -215,7 +232,7 @@ class Client
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM client WHERE email = '$email'";
+            $query = "SELECT * FROM clients WHERE email = '$email'";
             $result = $dbController->executeQuery($query);
             
             $dbController->closeConnection();
