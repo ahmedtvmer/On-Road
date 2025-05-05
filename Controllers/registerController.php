@@ -7,16 +7,103 @@ require_once __DIR__ . '/../Controllers/DbController.php';
 class RegisterController
 {
     private $error;
+    private $dbController;
 
     
-    public function __construct()
+    public function __construct($dbController = null)
     {
         $this->error = "";
+        $this->dbController = $dbController ?? new DBController();
+    }
+
+    private function isUsernameExist($username){
+        $selectedRole = $_POST['selected_role']?? 'client';
+
+        switch($selectedRole){
+            case 'client':
+                        $query = "SELECT * FROM clients WHERE username = '$username'";
+                        $result = $this->dbController->executeQuery($query);
+                        
+                        if ($result && count($result) > 0) {
+                            $this->error = "Username already exists";
+                            $this->dbController->closeConnection();
+                            return false;
+                        }
+            case 'mechanic':
+                        $query = "SELECT * FROM mechanics WHERE username = '$username'";
+                        $result = $this->dbController->executeQuery($query);
+
+                        if ($result && count($result) > 0) {
+                            $this->error = "Username already exists";
+                            $this->dbController->closeConnection();
+                            return false;
+                        }
+            case 'admin':
+                        $query = "SELECT * FROM admins WHERE username = '$username'";
+                        $result = $this->dbController->executeQuery($query);
+
+                        if ($result && count($result) > 0) {
+                            $this->error = "Username already exists";
+                            $this->dbController->closeConnection();
+                            return false;
+                        }
+                }
+                $this->dbController->closeConnection();
+                return true;
+    }
+
+    private function isEmailExist($email){
+        $selectedRole = $_POST['selected_role']?? 'client';
+
+        switch($selectedRole){
+            case 'client':
+                    $query = "SELECT * FROM clients WHERE email = '$email'";
+                    $result = $this->dbController->executeQuery($query);
+                    
+                    if ($result && count($result) > 0) {
+                        $this->error = "Email already exists";
+                        $this->dbController->closeConnection();
+                        return false;
+                    }
+            case'mechanic':
+                    $query = "SELECT * FROM mechanics WHERE email = '$email'";
+                    $result = $this->dbController->executeQuery($query);
+
+                    if ($result && count($result) > 0) {
+                        $this->error = "Email already exists";
+                        $this->dbController->closeConnection();
+                        return false;
+                    }
+            case 'admin':
+                    $query = "SELECT * FROM admins WHERE email = '$email'";
+                    $result = $this->dbController->executeQuery($query);
+
+                    if ($result && count($result) > 0) {
+                        $this->error = "Email already exists";
+                        $this->dbController->closeConnection();
+                        return false;
+                    }
+                }
+                $this->dbController->closeConnection();
+                return true;
+    }
+
+    private function isAdminCodeExist($adminCode)
+    {
+        $query = "SELECT * FROM admins WHERE adminCode = '$adminCode'";
+        $result = $this->dbController->executeQuery($query);
+        
+        if ($result && count($result) > 0) {
+            $this->error = "Admin code already exists";
+            $this->dbController->closeConnection();
+            return false;
+        }
+        $this->dbController->closeConnection();
+        return true;
     }
     
     public function processRegistration()
     {
-        $dbController = new DbController();
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $fullName = $_POST['fullname'] ?? '';
@@ -38,19 +125,13 @@ class RegisterController
             
             switch ($selectedRole) {
                 case 'client':
-                    $query = "SELECT * FROM clients WHERE username = '$username'";
-                    $result = $dbController->executeQuery($query);
-                    
-                    if ($result && count($result) > 0) {
-                        $this->error = "Username already exists";
-                        return false;
+                    if(!$this->isUsernameExist($username))
+                    {
+                      return false;  
                     }
 
-                    $query = "SELECT * FROM clients WHERE email = '$email'";
-                    $result = $dbController->executeQuery($query);
-                    
-                    if ($result && count($result) > 0) {
-                        $this->error = "Email already exists";
+                    if(!$this->isEmailExist($email))
+                    {
                         return false;
                     }
                     return $this->registerClient($fullName, $email, $username, $password);
@@ -67,19 +148,13 @@ class RegisterController
                         return false;
                     }
 
-                    $query = "SELECT * FROM mechanics WHERE username = '$username'";
-                    $result = $dbController->executeQuery($query);
-                    
-                    if ($result && count($result) > 0) {
-                        $this->error = "Username already exists";
-                        return false;
+                    if(!$this->isUsernameExist($username))
+                    {
+                      return false;  
                     }
 
-                    $query = "SELECT * FROM mechanics WHERE email = '$email'";
-                    $result = $dbController->executeQuery($query);
-                    
-                    if ($result && count($result) > 0) {
-                        $this->error = "Email already exists";
+                    if(!$this->isEmailExist($email))
+                    {
                         return false;
                     }
                     
@@ -93,30 +168,20 @@ class RegisterController
                         return false;
                     }
 
-                    $query = "SELECT * FROM admins WHERE username = '$username'";
-                    $result = $dbController->executeQuery($query);
-                    
-                    if ($result && count($result) > 0) {
-                        $this->error = "Username already exists";
+                    if(!$this->isUsernameExist($username))
+                    {
+                      return false;  
+                    }
+
+                    if(!$this->isEmailExist($email))
+                    {
                         return false;
                     }
 
-                    $query = "SELECT * FROM admins WHERE email = '$email'";
-                    $result = $dbController->executeQuery($query);
-                    
-                    if ($result && count($result) > 0) {
-                        $this->error = "Email already exists";
+                    if(!$this->isAdminCodeExist($adminCode))
+                    {
                         return false;
-                    }
-
-                    $query = "SELECT * FROM admins WHERE adminCode = '$adminCode'";
-                    $result = $dbController->executeQuery($query);
-                    
-                    if ($result && count($result) > 0) {
-                        $this->error = "Admin code already exists";
-                        return false;
-                    }
-                    
+                    }  
                     return $this->registerAdmin($fullName, $email, $username, $adminCode, $password);
                     
                 default:
