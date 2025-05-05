@@ -66,7 +66,6 @@ class Client
     
     public function setPassword($password)
     {
-        // Hash the password before setting it
         $this->password = password_hash($password, PASSWORD_DEFAULT);
     }
     
@@ -80,20 +79,17 @@ class Client
             
             if($result && count($result) > 0)
             {
-                // Verify the password against the stored hash
                 if(password_verify($password, $result[0]['password'])) {
                     $this->id = $result[0]['id'];
                     $this->fullName = $result[0]['fullName'];
                     $this->email = $result[0]['email'];
                     $this->username = $result[0]['username'];
-                    $this->password = $result[0]['password']; // Store the hashed password
+                    $this->password = $result[0]['password']; 
                     
-                    $dbController->closeConnection();
                     return true;
                 }
             }
             
-            $dbController->closeConnection();
         }
         
         return false;
@@ -114,16 +110,13 @@ class Client
             if($result)
             {
                 $this->id = $dbController->connection->insert_id;
-                $dbController->closeConnection();
                 return true;
             }
             else
             {
-                // Add this to see database errors
                 echo "Database Error: " . $dbController->connection->error;
             }
             
-            $dbController->closeConnection();
         }
         
         return false;
@@ -145,11 +138,9 @@ class Client
                 $this->username = $result[0]['username'];
                 $this->password = $result[0]['password'];
                 
-                $dbController->closeConnection();
                 return true;
             }
             
-            $dbController->closeConnection();
         }
         
         return false;
@@ -160,7 +151,6 @@ class Client
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            // Check if password needs to be updated (if it's not already hashed)
             if(!password_get_info($this->password)['algo']) {
                 $this->password = password_hash($this->password, PASSWORD_DEFAULT);
             }
@@ -174,7 +164,6 @@ class Client
             
             $result = $dbController->connection->query($query);
             
-            $dbController->closeConnection();
             return $result;
         }
         
@@ -189,7 +178,6 @@ class Client
             $query = "DELETE FROM clients WHERE id = $id";
             $result = $dbController->connection->query($query);
             
-            $dbController->closeConnection();
             return $result;
         }
         
@@ -204,7 +192,6 @@ class Client
             $query = "SELECT * FROM clients";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
             return $result;
         }
         
@@ -219,7 +206,6 @@ class Client
             $query = "SELECT * FROM clients WHERE username = '$username'";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
             return ($result && count($result) > 0);
         }
         
@@ -234,7 +220,6 @@ class Client
             $query = "SELECT * FROM clients WHERE email = '$email'";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
             return ($result && count($result) > 0);
         }
         

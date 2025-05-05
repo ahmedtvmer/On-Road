@@ -100,12 +100,10 @@ class Admin
                     $this->adminCode = $result[0]['adminCode'];
                     $this->password = $result[0]['password'];
                     
-                    $dbController->closeConnection();
                     return true;
                 }
             }
             
-            $dbController->closeConnection();
         }
         
         return false;
@@ -113,7 +111,6 @@ class Admin
     
     public function register()
     {
-        // Hash the password before storing
         $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
         
         $dbController = new DBController();
@@ -127,11 +124,9 @@ class Admin
             if($result)
             {
                 $this->id = $dbController->connection->insert_id;
-                $dbController->closeConnection();
                 return true;
             }
             
-            $dbController->closeConnection();
         }
         
         return false;
@@ -154,11 +149,9 @@ class Admin
                 $this->adminCode = $result[0]['adminCode'];
                 $this->password = $result[0]['password'];
                 
-                $dbController->closeConnection();
                 return true;
             }
             
-            $dbController->closeConnection();
         }
         
         return false;
@@ -169,7 +162,6 @@ class Admin
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            // Check if password needs to be updated (if it's not already hashed)
             if(!password_get_info($this->password)['algo']) {
                 $this->password = password_hash($this->password, PASSWORD_DEFAULT);
             }
@@ -184,7 +176,6 @@ class Admin
             
             $result = $dbController->connection->query($query);
             
-            $dbController->closeConnection();
             return $result;
         }
         
@@ -199,7 +190,6 @@ class Admin
             $query = "DELETE FROM admins WHERE id = $id";
             $result = $dbController->connection->query($query);
             
-            $dbController->closeConnection();
             return $result;
         }
         
@@ -214,7 +204,6 @@ class Admin
             $query = "SELECT * FROM admins";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
             return $result;
         }
         
@@ -229,7 +218,6 @@ class Admin
             $query = "SELECT * FROM admin_codes WHERE code = '$code' AND is_used = 0";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
             return ($result && count($result) > 0);
         }
         
@@ -244,7 +232,6 @@ class Admin
             $query = "SELECT * FROM admins WHERE username = '$username'";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
             return ($result && count($result) > 0);
         }
         

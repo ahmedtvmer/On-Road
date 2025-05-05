@@ -22,7 +22,7 @@ class DBController
         }
     }
     
-    public function closeConnection()
+    private function closeConnection()
     {
         if($this->connection)
         {
@@ -48,6 +48,10 @@ class DBController
         {
             return false;
         }
+    }
+
+    public function __destruct() {
+        $this->closeConnection();
     }
 }
 ?>

@@ -1,23 +1,16 @@
 <?php
-/**
- * LogoutController - Handles user logout functionality
- */
+
 class LogoutController
 {
-    /**
-     * Process user logout by destroying the session and redirecting to login page
-     */
+
     public function logout()
     {
-        // Start the session if it's not already started
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
         
-        // Unset all session variables
         $_SESSION = array();
         
-        // If a session cookie is used, destroy it
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
             setcookie(session_name(), '', time() - 42000,
@@ -26,16 +19,13 @@ class LogoutController
             );
         }
         
-        // Destroy the session
         session_destroy();
         
-        // Redirect to login page
         header("Location: ../Views/login.php");
         exit();
     }
 }
 
-// Create an instance and call the logout method
 $logoutController = new LogoutController();
 $logoutController->logout();
 ?>

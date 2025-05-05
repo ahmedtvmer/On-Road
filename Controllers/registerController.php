@@ -26,31 +26,33 @@ class RegisterController
                         
                         if ($result && count($result) > 0) {
                             $this->error = "Username already exists";
-                            $this->dbController->closeConnection();
                             return false;
                         }
+                        break;
+                        
             case 'mechanic':
                         $query = "SELECT * FROM mechanics WHERE username = '$username'";
                         $result = $this->dbController->executeQuery($query);
 
                         if ($result && count($result) > 0) {
                             $this->error = "Username already exists";
-                            $this->dbController->closeConnection();
                             return false;
                         }
+                        break;
+                        
             case 'admin':
                         $query = "SELECT * FROM admins WHERE username = '$username'";
                         $result = $this->dbController->executeQuery($query);
 
                         if ($result && count($result) > 0) {
                             $this->error = "Username already exists";
-                            $this->dbController->closeConnection();
                             return false;
                         }
-                }
-                $this->dbController->closeConnection();
-                return true;
+                        break;
     }
+    
+    return true;
+}
 
     private function isEmailExist($email){
         $selectedRole = $_POST['selected_role']?? 'client';
@@ -62,31 +64,33 @@ class RegisterController
                     
                     if ($result && count($result) > 0) {
                         $this->error = "Email already exists";
-                        $this->dbController->closeConnection();
                         return false;
                     }
-            case'mechanic':
+                    break;
+                    
+            case 'mechanic':
                     $query = "SELECT * FROM mechanics WHERE email = '$email'";
                     $result = $this->dbController->executeQuery($query);
 
                     if ($result && count($result) > 0) {
                         $this->error = "Email already exists";
-                        $this->dbController->closeConnection();
                         return false;
                     }
+                    break;
+                    
             case 'admin':
                     $query = "SELECT * FROM admins WHERE email = '$email'";
                     $result = $this->dbController->executeQuery($query);
 
                     if ($result && count($result) > 0) {
                         $this->error = "Email already exists";
-                        $this->dbController->closeConnection();
                         return false;
                     }
-                }
-                $this->dbController->closeConnection();
-                return true;
+                    break;
     }
+    
+    return true;
+}
 
     private function isAdminCodeExist($adminCode)
     {
@@ -95,10 +99,8 @@ class RegisterController
         
         if ($result && count($result) > 0) {
             $this->error = "Admin code already exists";
-            $this->dbController->closeConnection();
             return false;
         }
-        $this->dbController->closeConnection();
         return true;
     }
     
