@@ -1,94 +1,12 @@
 <?php
-require_once '../Controllers/ValidationController.php';
+require_once '../Controllers/ProfileController.php';
 
-$userData = [];
-$userRole = $_SESSION['role'];
-$userId = $_SESSION['user_id'];
-
-ValidationController::validateSession($_SESSION['role']);
-
-if ($userRole == 'client') {
-    require_once '../Models/client.php';
-    $user = new Client();
-    $user->getClientById($userId);
-} elseif ($userRole == 'mechanic') {
-    require_once '../Models/mechanic.php';
-    $user = new Mechanic();
-    $user->getMechanicById($userId);
-} elseif ($userRole == 'admin') {
-    require_once '../Models/admin.php';
-    $user = new Admin();
-    $user->getAdminById($userId);
-}
-
-$successMessage = '';
-$errorMessage = '';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
-    $deleteSuccess = false;
-    
-    if ($userRole == 'client') {
-        $deleteSuccess = $user->deleteClient($userId);
-    } elseif ($userRole == 'mechanic') {
-        $deleteSuccess = $user->deleteMechanic($userId);
-    } elseif ($userRole == 'admin') {
-        $deleteSuccess = $user->deleteAdmin($userId);
-    }
-    
-    if ($deleteSuccess) {
-        header("Location: ../Controllers/LogoutController.php?deleted=1");
-        exit();
-    } else {
-        $errorMessage = "Failed to delete account. Please try again.";
-    }
-}
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
-    $fullName = $_POST['fullName'];
-    $email = $_POST['email'];
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    
-    $user->setFullName($fullName);
-    $user->setEmail($email);
-    $user->setUsername($username);
-    
-    if (!empty($password)) {
-        $user->setPassword($password);
-    }
-    
-    if ($userRole == 'mechanic') {
-        $location = $_POST['location'];
-        $specialization = $_POST['specialization'];
-        $experience = $_POST['experience'];
-        
-        $user->setLocation($location);
-        $user->setSpecialization($specialization);
-        $user->setExperience($experience);
-    } elseif ($userRole == 'admin') {
-        $adminCode = $_POST['adminCode'];
-        $user->setAdminCode($adminCode);
-    }
-    
-    $updateSuccess = false;
-    if ($userRole == 'client') {
-        $updateSuccess = $user->updateClient();
-    } elseif ($userRole == 'mechanic') {
-        $updateSuccess = $user->updateMechanic();
-    } elseif ($userRole == 'admin') {
-        $updateSuccess = $user->updateAdmin();
-    }
-    
-    if ($updateSuccess) {
-        $successMessage = "Profile updated successfully!";
-        
-        $_SESSION['username'] = $username;
-        $_SESSION['fullname'] = $fullName;
-        $_SESSION['email'] = $email;
-    } else {
-        $errorMessage = "Failed to update profile. Please try again.";
-    }
-}
+$profileController = new ProfileController();
+$profileController->processProfileActions();
+$user = $profileController->getUser();
+$userRole = $profileController->getUserRole();
+$successMessage = $profileController->getSuccessMessage();
+$errorMessage = $profileController->getErrorMessage();
 ?>
 
 <!DOCTYPE html>

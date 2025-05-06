@@ -3,13 +3,9 @@ require_once '../Controllers/ValidationController.php';
 ValidationController::validateSession('mechanic');
 require_once '../Models/request.php';
 
-// Get mechanic ID from session
 $mechanicId = $_SESSION['user_id'];
 
-// Create Request object
 $request = new Request();
-
-// Get request counts by status for this mechanic
 $newRequestsCount = $request->getRequestsCountByMechanicAndStatus($mechanicId, 'assigned');
 $inProgressRequestsCount = $request->getRequestsCountByMechanicAndStatus($mechanicId, 'in_progress');
 $completedRequestsCount = $request->getCompletedRequestsCountByMechanic($mechanicId);

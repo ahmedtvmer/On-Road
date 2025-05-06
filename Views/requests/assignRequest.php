@@ -1,53 +1,11 @@
 <?php
-require_once '../../Controllers/ValidationController.php';
-ValidationController::validateSession('mechanic');
-require_once '../../Models/request.php';
+require_once '../../Controllers/RequestController.php';
 
-// Get mechanic ID from session
-$mechanicId = $_SESSION['user_id'];
-
-// Create Request object
-$request = new Request();
-
-// Get active requests assigned to this mechanic
-$assignedRequests = $request->getActiveRequestsByMechanicId($mechanicId);
-
-// Handle request completion
-$successMessage = '';
-$errorMessage = '';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['complete_request'])) {
-        $requestId = $_POST['request_id'];
-        
-        $request->getRequestById($requestId);
-        
-        if ($request->completeService()) {
-            $successMessage = "Request #$requestId has been marked as completed successfully!";
-            $assignedRequests = $request->getActiveRequestsByMechanicId($mechanicId);
-        } else {
-            $errorMessage = "Failed to complete the request. Please try again.";
-        }
-    } elseif (isset($_POST['assign_random'])) {
-        require_once '../../Models/mechanic.php';
-        $mechanic = new Mechanic();
-        $mechanic->getMechanicById($mechanicId);
-        $mechanicLocation = $mechanic->getLocation();
-        $pendingRequest = $request->getRandomPendingRequest($mechanicLocation);
-        
-        if ($pendingRequest) {
-            $request->getRequestById($pendingRequest['id']);
-            if ($request->assignMechanic($mechanicId)) {
-                $successMessage = "You have been assigned to request #" . $pendingRequest['id'] . " successfully!";
-                $assignedRequests = $request->getActiveRequestsByMechanicId($mechanicId);
-            } else {
-                $errorMessage = "Failed to assign the request. Please try again.";
-            }
-        } else {
-            $errorMessage = "No pending requests available in your location at the moment.";
-        }
-    }
-}
+$requestController = new RequestController();
+$requestController->processRequests();
+$assignedRequests = $requestController->getAssignedRequests();
+$successMessage = $requestController->getSuccessMessage();
+$errorMessage = $requestController->getErrorMessage();
 ?>
 
 <!DOCTYPE html>

@@ -6,14 +6,10 @@ require_once '../../Models/mechanic.php';
 $errorMessage = '';
 $mechanic = null;
 
-// Check if mechanic ID is provided
 if (isset($_GET['id']) && !empty($_GET['id'])) {
     $mechanicId = $_GET['id'];
-    
-    // Create Mechanic object
     $mechanic = new Mechanic();
     
-    // Get mechanic details
     if (!$mechanic->getMechanicById($mechanicId)) {
         $errorMessage = "Mechanic not found.";
     }

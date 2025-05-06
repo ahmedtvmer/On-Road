@@ -4,9 +4,7 @@ ValidationController::validateSession('client');
 require_once '../../Models/request.php';
 
 $clientId = $_SESSION['user_id'];
-
 $request = new Request();
-
 $activeRequests = $request->getActiveRequestsByClientId($clientId);
 ?>
 

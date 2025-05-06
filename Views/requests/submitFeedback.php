@@ -1,68 +1,11 @@
 <?php
-require_once '../../Controllers/ValidationController.php';
-ValidationController::validateSession('client');
-require_once '../../Models/request.php';
-require_once '../../Models/feedback.php';
+require_once '../../Controllers/FeedbackController.php';
 
-$clientId = $_SESSION['user_id'];
-$errorMessage = '';
-$successMessage = '';
-$requestData = null;
-
-if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $requestId = $_GET['id'];
-    
-    $request = new Request();
-    
-    if ($request->getRequestById($requestId)) {
-        if ($request->getClientId() == $clientId) {
-            if (!empty($request->getCompletedAt()) && $request->getCompletedAt() != '0000-00-00 00:00:00') {
-                $feedback = new Feedback();
-                if (!$feedback->checkFeedbackExists($requestId)) {
-                    $requestData = [
-                        'id' => $request->getId(),
-                        'description' => $request->getDescription(),
-                        'location' => $request->getLocation(),
-                        'mechanicId' => $request->getMechanicId(),
-                        'mechanicName' => $request->getMechanicName()
-                    ];
-                } else {
-                    $errorMessage = "You have already submitted feedback for this request.";
-                }
-            } else {
-                $errorMessage = "You can only provide feedback for completed requests.";
-            }
-        } else {
-            $errorMessage = "You don't have permission to access this request.";
-        }
-    } else {
-        $errorMessage = "Request not found.";
-    }
-} else {
-    $errorMessage = "Request ID is required.";
-}
-
-// Handle form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_feedback'])) {
-    $requestId = $_POST['request_id'];
-    $mechanicId = $_POST['mechanic_id'];
-    $costRating = $_POST['cost_rating'];
-    $serviceRating = $_POST['service_rating'];
-    
-    // Create feedback object
-    $feedback = new Feedback();
-    $feedback->setRequestId($requestId);
-    $feedback->setClientId($clientId);
-    $feedback->setMechanicId($mechanicId);
-    $feedback->setCostRating($costRating);
-    $feedback->setServiceRating($serviceRating);
-    
-    if ($feedback->createFeedback()) {
-        $successMessage = "Thank you for your feedback!";
-    } else {
-        $errorMessage = "Failed to submit feedback. Please try again.";
-    }
-}
+$feedbackController = new FeedbackController();
+$feedbackController->processFeedback();
+$errorMessage = $feedbackController->getErrorMessage();
+$successMessage = $feedbackController->getSuccessMessage();
+$requestData = $feedbackController->getRequestData();
 ?>
 
 <!DOCTYPE html>
