@@ -29,7 +29,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $errorMessage = "Failed to complete the request. Please try again.";
         }
     } elseif (isset($_POST['assign_random'])) {
-        $pendingRequest = $request->getRandomPendingRequest();
+        require_once '../../Models/mechanic.php';
+        $mechanic = new Mechanic();
+        $mechanic->getMechanicById($mechanicId);
+        $mechanicLocation = $mechanic->getLocation();
+        $pendingRequest = $request->getRandomPendingRequest($mechanicLocation);
         
         if ($pendingRequest) {
             $request->getRequestById($pendingRequest['id']);
@@ -40,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $errorMessage = "Failed to assign the request. Please try again.";
             }
         } else {
-            $errorMessage = "No pending requests available at the moment.";
+            $errorMessage = "No pending requests available in your location at the moment.";
         }
     }
 }

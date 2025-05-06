@@ -244,7 +244,7 @@ class Request
         return array();
     }
 
-    public function getRandomPendingRequest()
+    public function getRandomPendingRequest($mechanicLocation)
     {
         $dbController = new DBController();
         if($dbController->openConnection())
@@ -252,7 +252,8 @@ class Request
             $query = "SELECT r.*, c.fullname as clientName 
                       FROM requests r 
                       LEFT JOIN clients c ON r.client_id = c.id
-                      WHERE r.mechanic_id IS NULL OR r.mechanic_id = 0
+                      WHERE (r.mechanic_id IS NULL OR r.mechanic_id = 0)
+                      AND r.location = '$mechanicLocation'
                       ORDER BY RAND() LIMIT 1";
             
             $result = $dbController->executeQuery($query);
@@ -360,17 +361,16 @@ class Request
 }
 
 public function getAllRequestsByClientId($clientId) {
-    $db = new DBController();
-    if ($db->openConnection()) {
+    $dbController = new DBController();
+    if ($dbController->openConnection()) {
         $query = "SELECT r.*, m.fullname as mechanicName 
                   FROM requests r 
                   LEFT JOIN mechanics m ON r.mechanic_id = m.id 
                   WHERE r.client_id = '$clientId' 
                   ORDER BY r.createdAt DESC";
         
-        $result = $db->executeQuery($query);
+        $result = $dbController->executeQuery($query);
         
-        // Simply return the result array - no need to check num_rows
         return $result ? $result : array();
     } else {
         echo "Error in database connection";
@@ -378,9 +378,6 @@ public function getAllRequestsByClientId($clientId) {
     }
 }
 
-/**
- * Get all requests assigned to a mechanic (both active and completed)
- */
 public function getAllRequestsByMechanicId($mechanicId) {
     $db = new DBController();
     if ($db->openConnection()) {
@@ -440,6 +437,22 @@ public function getCompletedRequestsCountByMechanic($mechanicId)
     
     return 0;
 }
+    
+    public function getMechanicName()
+    {
+        if ($this->mechanicId) {
+            $dbController = new DBController();
+            if ($dbController->openConnection()) {
+                $query = "SELECT fullname FROM mechanics WHERE id = $this->mechanicId";
+                $result = $dbController->executeQuery($query);
+                
+                if ($result && count($result) > 0) {
+                    return $result[0]['fullname'];
+                }
+            }
+        }
+        return "Not assigned";
+    }
 }
 ?>
 

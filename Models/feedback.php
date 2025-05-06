@@ -1,5 +1,6 @@
 <?php
-require_once 'DbController.php';
+require_once __DIR__ . "/../Controllers/DbController.php";
+require_once 'mechanic.php';
 
 class Feedback
 {
@@ -22,7 +23,6 @@ class Feedback
         $this->serviceRating = $serviceRating;
     }
     
-    // Getters
     public function getId()
     {
         return $this->id;
@@ -58,7 +58,6 @@ class Feedback
         return $this->serviceRating;
     }
     
-    // Setters
     public function setId($id)
     {
         $this->id = $id;
@@ -94,13 +93,12 @@ class Feedback
         $this->serviceRating = $serviceRating;
     }
     
-    // Database Operations
     public function createFeedback()
     {
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "INSERT INTO feedback (request_id, client_id, mechanic_id, created_at, cost_rating, service_rating) 
+            $query = "INSERT INTO feedbacks (request_id, client_id, mechanic_id, createdAt, costRating, serviceRating) 
                       VALUES ('$this->requestId', '$this->clientId', '$this->mechanicId', '$this->createdAt', '$this->costRating', '$this->serviceRating')";
             
             $result = $dbController->connection->query($query);
@@ -108,15 +106,12 @@ class Feedback
             if($result)
             {
                 $this->id = $dbController->connection->insert_id;
-                $dbController->closeConnection();
-                
-                // Update mechanic rating
                 $this->updateMechanicRating();
                 
                 return true;
             }
             
-            $dbController->closeConnection();
+             
         }
         
         return false;
@@ -140,11 +135,11 @@ class Feedback
                 $this->costRating = $result[0]['cost_rating'];
                 $this->serviceRating = $result[0]['service_rating'];
                 
-                $dbController->closeConnection();
+                 
                 return true;
             }
             
-            $dbController->closeConnection();
+             
         }
         
         return false;
@@ -165,10 +160,9 @@ class Feedback
             
             $result = $dbController->connection->query($query);
             
-            $dbController->closeConnection();
+             
             
             if($result) {
-                // Update mechanic rating
                 $this->updateMechanicRating();
                 return true;
             }
@@ -184,16 +178,14 @@ class Feedback
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            // First get the feedback to know which mechanic's rating to update
             $this->getFeedbackById($id);
             
             $query = "DELETE FROM feedback WHERE id = $id";
             $result = $dbController->connection->query($query);
             
-            $dbController->closeConnection();
+             
             
             if($result) {
-                // Update mechanic rating after deletion
                 $this->updateMechanicRatingAfterDeletion();
                 return true;
             }
@@ -212,7 +204,7 @@ class Feedback
             $query = "SELECT * FROM feedback ORDER BY created_at DESC";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
+             
             return $result;
         }
         
@@ -237,11 +229,11 @@ class Feedback
                 $this->costRating = $result[0]['cost_rating'];
                 $this->serviceRating = $result[0]['service_rating'];
                 
-                $dbController->closeConnection();
+                 
                 return true;
             }
             
-            $dbController->closeConnection();
+             
         }
         
         return false;
@@ -255,7 +247,7 @@ class Feedback
             $query = "SELECT * FROM feedback WHERE client_id = $clientId ORDER BY created_at DESC";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
+             
             return $result;
         }
         
@@ -270,7 +262,7 @@ class Feedback
             $query = "SELECT * FROM feedback WHERE mechanic_id = $mechanicId ORDER BY created_at DESC";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
+             
             return $result;
         }
         
@@ -282,23 +274,21 @@ class Feedback
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM feedback WHERE request_id = $requestId";
+            $query = "SELECT * FROM feedbacks WHERE request_id = $requestId";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
+             
             return ($result && count($result) > 0);
         }
         
         return false;
     }
     
-    // Helper methods for mechanic rating
     private function updateMechanicRating()
     {
         if($this->mechanicId) {
             $mechanic = new Mechanic();
             if($mechanic->getMechanicById($this->mechanicId)) {
-                // Calculate average of cost and service ratings
                 $averageRating = ($this->costRating + $this->serviceRating) / 2;
                 $mechanic->addReview($averageRating);
             }
@@ -308,7 +298,6 @@ class Feedback
     private function updateMechanicRatingAfterDeletion()
     {
         if($this->mechanicId) {
-            // Recalculate mechanic rating from all remaining feedback
             $dbController = new DBController();
             if($dbController->openConnection())
             {
@@ -326,7 +315,7 @@ class Feedback
                     }
                 }
                 
-                $dbController->closeConnection();
+                 
             }
         }
     }

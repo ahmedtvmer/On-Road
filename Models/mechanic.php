@@ -212,7 +212,7 @@ class Mechanic
                       experience = '$this->experience',
                       rating = $this->rating,
                       totalReviews = $this->totalReviews
-                      WHERE id = $this->id";
+                      WHERE id = $this->id";    
             
             $result = $dbController->connection->query($query);
             

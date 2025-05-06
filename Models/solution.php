@@ -14,7 +14,6 @@ class Solution
         $this->description = $description;
     }
     
-    // Getters
     public function getId()
     {
         return $this->id;
@@ -30,7 +29,6 @@ class Solution
         return $this->description;
     }
     
-    // Setters
     public function setId($id)
     {
         $this->id = $id;
@@ -46,7 +44,6 @@ class Solution
         $this->description = $description;
     }
     
-    // Database Operations
     public function createSolution()
     {
         $dbController = new DBController();
@@ -60,11 +57,11 @@ class Solution
             if($result)
             {
                 $this->id = $dbController->connection->insert_id;
-                $dbController->closeConnection();
+                 
                 return true;
             }
             
-            $dbController->closeConnection();
+             
         }
         
         return false;
@@ -84,11 +81,11 @@ class Solution
                 $this->requestId = $result[0]['request_id'];
                 $this->description = $result[0]['description'];
                 
-                $dbController->closeConnection();
+                 
                 return true;
             }
             
-            $dbController->closeConnection();
+             
         }
         
         return false;
@@ -106,7 +103,7 @@ class Solution
             
             $result = $dbController->connection->query($query);
             
-            $dbController->closeConnection();
+             
             return $result;
         }
         
@@ -121,7 +118,7 @@ class Solution
             $query = "DELETE FROM solution WHERE id = $id";
             $result = $dbController->connection->query($query);
             
-            $dbController->closeConnection();
+             
             return $result;
         }
         
@@ -142,11 +139,11 @@ class Solution
                 $this->requestId = $result[0]['request_id'];
                 $this->description = $result[0]['description'];
                 
-                $dbController->closeConnection();
+                 
                 return true;
             }
             
-            $dbController->closeConnection();
+             
         }
         
         return false;
@@ -160,7 +157,7 @@ class Solution
             $query = "SELECT * FROM solution";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
+             
             return $result;
         }
         
@@ -175,7 +172,7 @@ class Solution
             $query = "SELECT * FROM solution WHERE request_id = $requestId";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
+             
             return ($result && count($result) > 0);
         }
         

@@ -77,13 +77,29 @@ $allRequests = $request->getAllRequestsByClientId($clientId);
                                                         <?php if (empty($request['mechanic_id'])): ?>
                                                             <span class="text-muted">Not assigned yet</span>
                                                         <?php else: ?>
-                                                            <?php echo $request['mechanicName']; ?>
+                                                            <a href="mechanicProfile.php?id=<?php echo $request['mechanic_id']; ?>"><?php echo $request['mechanicName']; ?></a>
                                                         <?php endif; ?>
                                                     </td>
                                                     <td>
                                                         <a href="requestDetails.php?id=<?php echo $request['id']; ?>" class="btn btn-sm btn-outline-primary">
                                                             <i class="fas fa-eye"></i> View Details
                                                         </a>
+                                                        
+                                                        <?php if (!empty($request['completedAt']) && $request['completedAt'] != '0000-00-00 00:00:00'): ?>
+                                                            <?php
+                                                            require_once '../../Models/feedback.php';
+                                                            $feedback = new Feedback();
+                                                            $feedbackExists = $feedback->checkFeedbackExists($request['id']);
+                                                            ?>
+                                                            
+                                                            <?php if (!$feedbackExists): ?>
+                                                                <a href="submitFeedback.php?id=<?php echo $request['id']; ?>" class="btn btn-sm btn-outline-success mt-1">
+                                                                    <i class="fas fa-star"></i> Rate Service
+                                                                </a>
+                                                            <?php else: ?>
+                                                                <span class="badge bg-success mt-1 d-block"><i class="fas fa-check-circle"></i> Feedback Submitted</span>
+                                                            <?php endif; ?>
+                                                        <?php endif; ?>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>

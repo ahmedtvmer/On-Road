@@ -4,26 +4,20 @@ ValidationController::validateSession('mechanic');
 require_once '../../Models/request.php';
 require_once '../../Models/mechanic.php';
 
-// Get mechanic ID from session
 $mechanicId = $_SESSION['user_id'];
 
-// Create Mechanic object
 $mechanic = new Mechanic();
 $mechanic->getMechanicById($mechanicId);
 
-// Create Request object
 $request = new Request();
 
-// Get all requests assigned to this mechanic (both active and completed)
 $allRequests = $request->getAllRequestsByMechanicId($mechanicId);
 
-// Get statistics
 $totalRequests = count($allRequests);
 $completedRequests = $request->getCompletedRequestsCountByMechanic($mechanicId);
 $pendingRequests = $request->getRequestsCountByMechanicAndStatus($mechanicId, 'assigned');
 $inProgressRequests = $request->getRequestsCountByMechanicAndStatus($mechanicId, 'in_progress');
 
-// Calculate completion rate
 $completionRate = ($totalRequests > 0) ? round(($completedRequests / $totalRequests) * 100) : 0;
 ?>
 
@@ -32,7 +26,7 @@ $completionRate = ($totalRequests > 0) ? round(($completedRequests / $totalReque
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUTODOC BREAKDOWN ASSISTANCE | Mechanic Report</title>
+    <title>ON-ROAD BREAKDOWN ASSISTANCE | Mechanic Report</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../../root/css/main.css">
@@ -91,7 +85,6 @@ $completionRate = ($totalRequests > 0) ? round(($completedRequests / $totalReque
                 
                 <h4 class="mb-4">Mechanic Performance Report</h4>
                 
-                <!-- Mechanic Profile Card -->
                 <div class="card shadow mb-4">
                     <div class="card-header bg-primary text-white">
                         <h5 class="mb-0">Mechanic Profile</h5>
@@ -136,7 +129,6 @@ $completionRate = ($totalRequests > 0) ? round(($completedRequests / $totalReque
                     </div>
                 </div>
                 
-                <!-- Statistics Cards -->
                 <div class="row mb-4">
                     <div class="col-md-4">
                         <div class="stat-card">
@@ -161,7 +153,6 @@ $completionRate = ($totalRequests > 0) ? round(($completedRequests / $totalReque
                     </div>
                 </div>
                 
-                <!-- Request History Table -->
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white">
                         <h5 class="mb-0">Request History</h5>
