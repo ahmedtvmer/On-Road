@@ -1,72 +1,14 @@
 <?php
+require_once 'user.php';
 require_once __DIR__ . "/../Controllers/DbController.php";
 
-class Client
+class Client extends User
 {
-    private $id;
-    private $fullName;
-    private $email;
-    private $username;
-    private $password;
     const ROLE = 'client';
     
     public function __construct($id = "", $fullName = "", $email = "", $username = "", $password = "")
     {
-        $this->id = $id;
-        $this->fullName = $fullName;
-        $this->email = $email;
-        $this->username = $username;
-        $this->password = $password;
-    }
-    
-    public function getId()
-    {
-        return $this->id;
-    }
-    
-    public function getFullName()
-    {
-        return $this->fullName;
-    }
-    
-    public function getEmail()
-    {
-        return $this->email;
-    }
-    
-    public function getUsername()
-    {
-        return $this->username;
-    }
-    
-    public function getPassword()
-    {
-        return $this->password;
-    }
-    
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-    
-    public function setFullName($fullName)
-    {
-        $this->fullName = $fullName;
-    }
-    
-    public function setEmail($email)
-    {
-        $this->email = $email;
-    }
-    
-    public function setUsername($username)
-    {
-        $this->username = $username;
-    }
-    
-    public function setPassword($password)
-    {
-        $this->password = password_hash($password, PASSWORD_DEFAULT);
+        parent::__construct($id, $username, $password, $fullName, $email);
     }
     
     public function login($username, $password)
@@ -79,17 +21,16 @@ class Client
             
             if($result && count($result) > 0)
             {
-                if(password_verify($password, $result[0]['password'])) {
-                    $this->id = $result[0]['id'];
-                    $this->fullName = $result[0]['fullName'];
-                    $this->email = $result[0]['email'];
-                    $this->username = $result[0]['username'];
-                    $this->password = $result[0]['password']; 
+                if($this->verifyPassword($password, $result[0]['password'])) {
+                    $this->setId($result[0]['id']);
+                    $this->setFullName($result[0]['fullName']);
+                    $this->setEmail($result[0]['email']);
+                    $this->setUsername($result[0]['username']);
+                    $this->setPassword($result[0]['password']); 
                     
                     return true;
                 }
             }
-            
         }
         
         return false;
@@ -97,26 +38,25 @@ class Client
     
     public function register()
     {
-        $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+        $hashedPassword = $this->hashPassword($this->getPassword());
         
         $dbController = new DBController();
         if($dbController->openConnection())
         {
             $query = "INSERT INTO clients (fullName, email, username, password, role) 
-                      VALUES ('$this->fullName', '$this->email', '$this->username', '$hashedPassword', '" . self::ROLE . "')";
+                      VALUES ('".$this->getFullName()."', '".$this->getEmail()."', '".$this->getUsername()."', '$hashedPassword', '" . self::ROLE . "')";
             
             $result = $dbController->connection->query($query);
             
             if($result)
             {
-                $this->id = $dbController->connection->insert_id;
+                $this->setId($dbController->connection->insert_id);
                 return true;
             }
             else
             {
                 echo "Database Error: " . $dbController->connection->error;
             }
-            
         }
         
         return false;
@@ -132,15 +72,14 @@ class Client
             
             if($result && count($result) > 0)
             {
-                $this->id = $result[0]['id'];
-                $this->fullName = $result[0]['fullName'];
-                $this->email = $result[0]['email'];
-                $this->username = $result[0]['username'];
-                $this->password = $result[0]['password'];
+                $this->setId($result[0]['id']);
+                $this->setFullName($result[0]['fullName']);
+                $this->setEmail($result[0]['email']);
+                $this->setUsername($result[0]['username']);
+                $this->setPassword($result[0]['password']);
                 
                 return true;
             }
-            
         }
         
         return false;
@@ -148,26 +87,7 @@ class Client
     
     public function updateClient()
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
-        {
-            if(!password_get_info($this->password)['algo']) {
-                $this->password = password_hash($this->password, PASSWORD_DEFAULT);
-            }
-            
-            $query = "UPDATE clients SET 
-                      fullName = '$this->fullName', 
-                      email = '$this->email', 
-                      username = '$this->username', 
-                      password = '$this->password' 
-                      WHERE id = $this->id";
-            
-            $result = $dbController->connection->query($query);
-            
-            return $result;
-        }
-        
-        return false;
+        return $this->updateUser('clients');
     }
     
     public function deleteClient($id)

@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    // Form validation
     $('#signupForm').on('submit', function(e) {
         e.preventDefault();
         
@@ -12,19 +11,16 @@ $(document).ready(function() {
         const termsChecked = $('#terms').is(':checked');
         const selectedRole = $('#selected_role').val();
         
-        // Reset previous error states
         $('.form-control').removeClass('is-invalid');
         $('.error-message').hide();
         $('#signup-error').hide();
         
-        // Validate full name
         if (fullname === '') {
             $('#fullname').addClass('is-invalid');
             $('#fullname-error').show();
             isValid = false;
         }
         
-        // Validate email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (email === '' || !emailRegex.test(email)) {
             $('#email').addClass('is-invalid');
@@ -32,28 +28,24 @@ $(document).ready(function() {
             isValid = false;
         }
         
-        // Validate username
         if (username === '' || username.length < 4) {
             $('#username').addClass('is-invalid');
             $('#username-error').show();
             isValid = false;
         }
         
-        // Validate password
         if (password === '' || password.length < 6) {
             $('#password').addClass('is-invalid');
             $('#password-error').show();
             isValid = false;
         }
         
-        // Validate confirm password
         if (confirmPassword === '' || confirmPassword !== password) {
             $('#confirm_password').addClass('is-invalid');
             $('#confirm-password-error').show();
             isValid = false;
         }
         
-        // Validate mechanic-specific fields if mechanic role is selected
         if (selectedRole === 'mechanic') {
             const specialization = $('#specialization').val().trim();
             const location = $('#Location').val().trim();
@@ -75,7 +67,6 @@ $(document).ready(function() {
             }
         }
         
-        // Validate admin-specific fields if admin role is selected
         if (selectedRole === 'admin') {
             const adminCode = $('#admin_code').val().trim();
             if (adminCode === '') {
@@ -85,54 +76,40 @@ $(document).ready(function() {
             }
         }
         
-        // Validate terms
         if (!termsChecked) {
             $('#terms-error').show();
             isValid = false;
         }
         
-        // If form is valid, submit the form to navigate to home.php
-        // If not valid, show the error message
         if (isValid) {
-            // Allow the form to submit naturally to home.php
             this.submit();
         } else {
-            // Show general error message
             $('#signup-error').text('Please fix the errors in the form.').show();
         }
     });
     
-    // Clear error state on input focus
     $('.form-control').on('focus', function() {
         $(this).removeClass('is-invalid');
         $(this).next().next('.error-message').hide();
     });
     
-    // Clear terms error when checkbox is clicked
     $('#terms').on('change', function() {
         if ($(this).is(':checked')) {
             $('#terms-error').hide();
         }
     });
     
-    // Role selection toggle
     $('.role-option').click(function() {
-        // Remove active class from all options
         $('.role-option').removeClass('active');
         
-        // Add active class to clicked option
         $(this).addClass('active');
         
-        // Get selected role
         const selectedRole = $(this).data('role');
         
-        // Update hidden input value
         $('#selected_role').val(selectedRole);
         
-        // Hide all role-specific fields
         $('#mechanic-fields, #admin-fields').hide();
         
-        // Show fields based on selected role
         if (selectedRole === 'mechanic') {
             $('#mechanic-fields').show();
         } else if (selectedRole === 'admin') {
@@ -140,12 +117,10 @@ $(document).ready(function() {
         }
     });
     
-    // Toggle sidebar on mobile (for dashboard pages)
     $('#toggleSidebar').click(function() {
         $('#adminSidebar').toggleClass('show');
     });
     
-    // Close sidebar when clicking outside on mobile
     $(document).click(function(event) {
         if (!$(event.target).closest('#adminSidebar').length && 
             !$(event.target).closest('#toggleSidebar').length && 
@@ -155,3 +130,78 @@ $(document).ready(function() {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const roleOptions = document.querySelectorAll('.role-option');
+    const selectedRoleInput = document.getElementById('selected_role');
+    const mechanicFields = document.getElementById('mechanic-fields');
+    const adminFields = document.getElementById('admin-fields');
+    
+    roleOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            roleOptions.forEach(opt => opt.classList.remove('active'));
+            
+            this.classList.add('active');
+            
+            const role = this.getAttribute('data-role');
+            
+            if (role === 'user' || role == "") {
+                selectedRoleInput.value = 'client';
+            } else {
+                selectedRoleInput.value = role;
+            }
+            
+            if (role === 'mechanic') {
+                mechanicFields.style.display = 'block';
+                adminFields.style.display = 'none';
+            } else if (role === 'admin') {
+                mechanicFields.style.display = 'none';
+                adminFields.style.display = 'block';
+            } else {
+                mechanicFields.style.display = 'none';
+                adminFields.style.display = 'none';
+            }
+        });
+    });
+    
+    const form = document.getElementById('signupForm');
+    form.addEventListener('submit', function(event) {
+        let isValid = true;
+        
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        if (password !== confirmPassword) {
+            document.getElementById('confirm-password-error').style.display = 'block';
+            isValid = false;
+        } else {
+            document.getElementById('confirm-password-error').style.display = 'none';
+        }
+        
+        if (selectedRoleInput.value === 'mechanic') {
+            const specialization = document.getElementById('specialization').value;
+            const location = document.getElementById('location').value;
+            const experience = document.getElementById('experience').value;
+            
+            if (!specialization || !location || !experience) {
+                isValid = false;
+                alert('All mechanic fields are required');
+            }
+        }
+        
+         if (selectedRoleInput.value === 'admin') {
+            const adminCode = document.getElementById('admin_code').value;
+            
+            if (!adminCode) {
+                document.getElementById('admin-code-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('admin-code-error').style.display = 'none';
+            }
+        }
+        
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+    
+    
+});

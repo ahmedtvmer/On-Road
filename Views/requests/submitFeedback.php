@@ -17,37 +17,6 @@ $requestData = $feedbackController->getRequestData();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../../root/css/main.css">
-    <style>
-        .rating {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: flex-end;
-        }
-        .rating input {
-            display: none;
-        }
-        .rating label {
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            margin: 0;
-            padding: 0;
-            font-size: 30px;
-            color: #ddd;
-        }
-        .rating label:before {
-            content: '\f005';
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-        }
-        .rating input:checked ~ label {
-            color: #ffc107;
-        }
-        .rating label:hover,
-        .rating label:hover ~ label {
-            color: #ffc107;
-        }
-    </style>
 </head>
 <body>
     <?php include_once '../includes/navbar.php'; ?>

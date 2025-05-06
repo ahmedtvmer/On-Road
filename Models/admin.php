@@ -1,45 +1,16 @@
 <?php
-require_once __DIR__ . "/../Controllers/DbController.php";
+require_once 'user.php';
+require_once '../Controllers/DbController.php';
 
-
-class Admin
+class Admin extends User
 {
-    private $id;
-    private $fullName;
-    private $email;
-    private $username;
     private $adminCode;
-    private $password;
     const ROLE = 'admin';
     
     public function __construct($id = "", $fullName = "", $email = "", $username = "", $adminCode = "", $password = "")
     {
-        $this->id = $id;
-        $this->fullName = $fullName;
-        $this->email = $email;
-        $this->username = $username;
+        parent::__construct($id, $username, $password, $fullName, $email);
         $this->adminCode = $adminCode;
-        $this->password = $password;
-    }
-    
-    public function getId()
-    {
-        return $this->id;
-    }
-    
-    public function getFullName()
-    {
-        return $this->fullName;
-    }
-    
-    public function getEmail()
-    {
-        return $this->email;
-    }
-    
-    public function getUsername()
-    {
-        return $this->username;
     }
     
     public function getAdminCode()
@@ -47,39 +18,9 @@ class Admin
         return $this->adminCode;
     }
     
-    public function getPassword()
-    {
-        return $this->password;
-    }
-    
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-    
-    public function setFullName($fullName)
-    {
-        $this->fullName = $fullName;
-    }
-    
-    public function setEmail($email)
-    {
-        $this->email = $email;
-    }
-    
-    public function setUsername($username)
-    {
-        $this->username = $username;
-    }
-    
     public function setAdminCode($adminCode)
     {
         $this->adminCode = $adminCode;
-    }
-    
-    public function setPassword($password)
-    {
-        $this->password = password_hash($password, PASSWORD_DEFAULT);
     }
     
     public function login($username, $password)
@@ -92,18 +33,17 @@ class Admin
             
             if($result && count($result) > 0)
             {
-                    if(password_verify($password, $result[0]['password'])) {
-                    $this->id = $result[0]['id'];
-                    $this->fullName = $result[0]['fullName'];
-                    $this->email = $result[0]['email'];
-                    $this->username = $result[0]['username'];
+                if($this->verifyPassword($password, $result[0]['password'])) {
+                    $this->setId($result[0]['id']);
+                    $this->setFullName($result[0]['fullName']);
+                    $this->setEmail($result[0]['email']);
+                    $this->setUsername($result[0]['username']);
                     $this->adminCode = $result[0]['adminCode'];
-                    $this->password = $result[0]['password'];
+                    $this->setPassword($result[0]['password']);
                     
                     return true;
                 }
             }
-            
         }
         
         return false;
@@ -111,22 +51,21 @@ class Admin
     
     public function register()
     {
-        $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+        $hashedPassword = $this->hashPassword($this->getPassword());
         
         $dbController = new DBController();
         if($dbController->openConnection())
         {
             $query = "INSERT INTO admins (fullName, email, username, adminCode, password, role) 
-                      VALUES ('$this->fullName', '$this->email', '$this->username', '$this->adminCode', '$hashedPassword', '" . self::ROLE . "')";
+                      VALUES ('".$this->getFullName()."', '".$this->getEmail()."', '".$this->getUsername()."', '$this->adminCode', '$hashedPassword', '" . self::ROLE . "')";
             
             $result = $dbController->connection->query($query);
             
             if($result)
             {
-                $this->id = $dbController->connection->insert_id;
+                $this->setId($dbController->connection->insert_id);
                 return true;
             }
-            
         }
         
         return false;
@@ -142,16 +81,15 @@ class Admin
             
             if($result && count($result) > 0)
             {
-                $this->id = $result[0]['id'];
-                $this->fullName = $result[0]['fullName'];
-                $this->email = $result[0]['email'];
-                $this->username = $result[0]['username'];
+                $this->setId($result[0]['id']);
+                $this->setFullName($result[0]['fullName']);
+                $this->setEmail($result[0]['email']);
+                $this->setUsername($result[0]['username']);
                 $this->adminCode = $result[0]['adminCode'];
-                $this->password = $result[0]['password'];
+                $this->setPassword($result[0]['password']);
                 
                 return true;
             }
-            
         }
         
         return false;
@@ -162,17 +100,13 @@ class Admin
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            if(!password_get_info($this->password)['algo']) {
-                $this->password = password_hash($this->password, PASSWORD_DEFAULT);
-            }
-            
             $query = "UPDATE admins SET 
-                      fullName = '$this->fullName', 
-                      email = '$this->email',
-                      username = '$this->username', 
+                      fullName = '".$this->getFullName()."', 
+                      email = '".$this->getEmail()."',
+                      username = '".$this->getUsername()."', 
                       adminCode = '$this->adminCode', 
-                      password = '$this->password' 
-                      WHERE id = $this->id";
+                      password = '".$this->getPassword()."' 
+                      WHERE id = ".$this->getId();
             
             $result = $dbController->connection->query($query);
             

@@ -1,13 +1,9 @@
 <?php
+require_once 'user.php';
 require_once __DIR__ . "/../Controllers/DbController.php";
 
-class Mechanic
+class Mechanic extends User
 {
-    private $id;
-    private $fullName;
-    private $email;
-    private $username;
-    private $password;
     private $location;
     private $specialization;
     private $experience;
@@ -17,41 +13,12 @@ class Mechanic
     
     public function __construct($id = "", $fullName = "", $email = "", $username = "", $password = "", $location = "", $specialization = "", $experience = "", $rating = 0, $totalReviews = 0)
     {
-        $this->id = $id;
-        $this->fullName = $fullName;
-        $this->email = $email;
-        $this->username = $username;
-        $this->password = $password;
+        parent::__construct($id, $username, $password, $fullName, $email);
         $this->location = $location;
         $this->specialization = $specialization;
         $this->experience = $experience;
         $this->rating = $rating;
         $this->totalReviews = $totalReviews;
-    }
-    
-    public function getId()
-    {
-        return $this->id;
-    }
-    
-    public function getFullName()
-    {
-        return $this->fullName;
-    }
-    
-    public function getEmail()
-    {
-        return $this->email;
-    }
-    
-    public function getUsername()
-    {
-        return $this->username;
-    }
-    
-    public function getPassword()
-    {
-        return $this->password;
     }
     
     public function getLocation()
@@ -69,62 +36,6 @@ class Mechanic
         return $this->experience;
     }
     
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-    
-    public function setFullName($fullName)
-    {
-        $this->fullName = $fullName;
-    }
-    
-    public function setEmail($email)
-    {
-        $this->email = $email;
-    }
-    
-    public function setUsername($username)
-    {
-        $this->username = $username;
-    }
-    
-    public function setPassword($password)
-    {
-        $this->password = password_hash($password, PASSWORD_DEFAULT);
-    }
-    
-    public function login($username, $password)
-    {
-        $dbController = new DBController();
-        if($dbController->openConnection())
-        {
-            $query = "SELECT * FROM mechanics WHERE username = '$username'";
-            $result = $dbController->executeQuery($query);
-            
-            if($result && count($result) > 0)
-            {
-                if(password_verify($password, $result[0]['password'])) {
-                    $this->id = $result[0]['id'];
-                    $this->fullName = $result[0]['fullName'];
-                    $this->email = $result[0]['email'];
-                    $this->username = $result[0]['username'];
-                    $this->password = $result[0]['password'];
-                    $this->location = $result[0]['location'];
-                    $this->specialization = $result[0]['specialization'];
-                    $this->experience = $result[0]['experience'];
-                    $this->rating = $result[0]['rating'] ?? 0;
-                    $this->totalReviews = $result[0]['totalReviews'] ?? 0;
-                    
-                    return true;
-                }
-            }
-            
-        }
-        
-        return false;
-    }
-    
     public function setLocation($location)
     {
         $this->location = $location;
@@ -140,9 +51,39 @@ class Mechanic
         $this->experience = $experience;
     }
     
+    public function login($username, $password)
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "SELECT * FROM mechanics WHERE username = '$username'";
+            $result = $dbController->executeQuery($query);
+            
+            if($result && count($result) > 0)
+            {
+                if($this->verifyPassword($password, $result[0]['password'])) {
+                    $this->setId($result[0]['id']);
+                    $this->setFullName($result[0]['fullName']);
+                    $this->setEmail($result[0]['email']);
+                    $this->setUsername($result[0]['username']);
+                    $this->setPassword($result[0]['password']);
+                    $this->location = $result[0]['location'];
+                    $this->specialization = $result[0]['specialization'];
+                    $this->experience = $result[0]['experience'];
+                    $this->rating = $result[0]['rating'] ?? 0;
+                    $this->totalReviews = $result[0]['totalReviews'] ?? 0;
+                    
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
     public function register()
     {
-        $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+        $hashedPassword = $this->hashPassword($this->getPassword());
         
         $dbController = new DBController();
         if($dbController->openConnection())
@@ -150,7 +91,7 @@ class Mechanic
             $query = "INSERT INTO mechanics (
                 fullName, email, username, password, location, specialization, experience, rating, totalReviews, role
             ) VALUES (
-                '{$this->fullName}', '{$this->email}', '{$this->username}', '{$hashedPassword}', '{$this->location}',
+                '".$this->getFullName()."', '".$this->getEmail()."', '".$this->getUsername()."', '{$hashedPassword}', '{$this->location}',
                 '{$this->specialization}', '{$this->experience}', {$this->rating}, {$this->totalReviews}, '" . self::ROLE . "'
             )";
     
@@ -159,7 +100,7 @@ class Mechanic
             
             if($result)
             {
-                $this->id = $dbController->connection->insert_id;
+                $this->setId($dbController->connection->insert_id);
                 return true;
             }
             
@@ -178,11 +119,11 @@ class Mechanic
             
             if($result && count($result) > 0)
             {
-                $this->id = $result[0]['id'];
-                $this->fullName = $result[0]['fullName'];
-                $this->email = $result[0]['email'];
-                $this->username = $result[0]['username'];
-                $this->password = $result[0]['password'];
+                $this->setId($result[0]['id']);
+                $this->setFullName($result[0]['fullName']);
+                $this->setEmail($result[0]['email']);
+                $this->setUsername($result[0]['username']);
+                $this->setPassword($result[0]['password']);
                 $this->location = $result[0]['location'];
                 $this->specialization = $result[0]['specialization'];
                 $this->experience = $result[0]['experience'];
@@ -203,16 +144,16 @@ class Mechanic
         if($dbController->openConnection())
         {
             $query = "UPDATE mechanics SET 
-                      fullName = '$this->fullName', 
-                      email = '$this->email', 
-                      username = '$this->username', 
-                      password = '$this->password',
+                      fullName = '".$this->getFullName()."', 
+                      email = '".$this->getEmail()."', 
+                      username = '".$this->getUsername()."', 
+                      password = '".$this->getPassword()."',
                       location = '$this->location',
                       specialization = '$this->specialization',
                       experience = '$this->experience',
                       rating = $this->rating,
                       totalReviews = $this->totalReviews
-                      WHERE id = $this->id";    
+                      WHERE id = ".$this->getId();    
             
             $result = $dbController->connection->query($query);
             
