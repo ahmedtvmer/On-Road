@@ -70,19 +70,7 @@ ValidationController::validateSession('admin');
             </ul>
         </div>
         
-        <div class="admin-header-container">
-            <div class="admin-header">
-                <button class="toggle-btn" id="toggleSidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h6 class="m-0">ON-ROAD BREAKDOWN ASSISTANCE</h6>
-                <div class="user-actions">
-                    <a href="#" class="text-white">
-                        <i class="fas fa-user-circle fs-4"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
+        <?php include_once 'includes/navbar.php'; ?>
         
         <div class="admin-content-wrapper">
             <div class="admin-content">

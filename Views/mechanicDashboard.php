@@ -1,6 +1,18 @@
 <?php
 require_once '../Controllers/ValidationController.php';
 ValidationController::validateSession('mechanic');
+require_once '../Models/request.php';
+
+// Get mechanic ID from session
+$mechanicId = $_SESSION['user_id'];
+
+// Create Request object
+$request = new Request();
+
+// Get request counts by status for this mechanic
+$newRequestsCount = $request->getRequestsCountByMechanicAndStatus($mechanicId, 'assigned');
+$inProgressRequestsCount = $request->getRequestsCountByMechanicAndStatus($mechanicId, 'in_progress');
+$completedRequestsCount = $request->getCompletedRequestsCountByMechanic($mechanicId);
 ?>
 
 <!DOCTYPE html>
@@ -33,17 +45,17 @@ ValidationController::validateSession('mechanic');
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="requests/assignRequest.php">
                         <i class="fas fa-file-alt"></i> Assign Request
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="reports/mechanicReport.php">
                         <i class="fas fa-chart-bar"></i> Report
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="profile.php">
                         <i class="fas fa-user-circle"></i> My Profile
                     </a>
                 </li>
@@ -55,19 +67,8 @@ ValidationController::validateSession('mechanic');
             </ul>
         </div>
         
-        <div class="admin-header-container">
-            <div class="admin-header">
-                <button class="toggle-btn" id="toggleSidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h6 class="m-0">ON-RIDE BREAKDOWN ASSISTANCE</h6>
-                <div class="user-actions">
-                    <a href="#" class="text-white">
-                        <i class="fas fa-user-circle fs-4"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
+       <?php include_once 'includes/navbar.php'; ?>
+        
         
         <div class="admin-content-wrapper">
             <div class="admin-content">
@@ -84,22 +85,22 @@ ValidationController::validateSession('mechanic');
                     <div class="col-md-4">
                         <div class="stat-card">
                             <div class="stat-label">Total New Request</div>
-                            <div class="stat-value">2</div>
-                            <a href="#" class="stat-link">View Detail</a>
+                            <div class="stat-value"><?php echo $newRequestsCount; ?></div>
+                            <a href="requests/assignRequest.php" class="stat-link">View Detail</a>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stat-card">
                             <div class="stat-label">Inprogress Request</div>
-                            <div class="stat-value">0</div>
-                            <a href="#" class="stat-link">View Detail</a>
+                            <div class="stat-value"><?php echo $inProgressRequestsCount; ?></div>
+                            <a href="requests/assignRequest.php" class="stat-link">View Detail</a>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stat-card">
                             <div class="stat-label">Completed Request</div>
-                            <div class="stat-value">1</div>
-                            <a href="#" class="stat-link">View Detail</a>
+                            <div class="stat-value"><?php echo $completedRequestsCount; ?></div>
+                            <a href="requests/assignRequest.php" class="stat-link">View Detail</a>
                         </div>
                     </div>
                 </div>

@@ -13,44 +13,7 @@ ValidationController::validateSession('client');
     <link rel="stylesheet" href="../root/css/main.css">
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #ff6b6b;">
-        <div class="container">
-            <a class="navbar-brand" href="home.php">On-Road</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="home.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">My Requests</a>
-                    </li>
-                </ul>
-                <div class="d-flex align-items-center">
-                    <div class="dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="avatar-circle me-2">
-                                <img src="../root/img/Avatar.png" alt="Avatar" class="rounded-circle img-fluid border border-light" width="40" height="40">
-                            </div>
-                            <span class="text-white"><?php echo $_SESSION['username']; ?></span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
-                            <li><a class="dropdown-item" href="#">Settings</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="../Controllers/LogoutController.php">Sign Out</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <?php include_once 'includes/navbar.php'; ?>
 
     <section class="hero-section">
         <div class="container">
@@ -61,8 +24,8 @@ ValidationController::validateSession('client');
                         <h1 class="hero-title">24/7 Onroad Breakdown Assistance in Egypt</h1>
                         <p class="hero-subtitle">DON'T WAIT ANYMORE. AVAILABLE ANYTIME ANYWHERE IN EGYPT.</p>
                         <div class="d-flex gap-3">
-                            <a href="#" class="btn btn-primary">Make Your Request Now</a>
-                            <a href="#" class="btn btn-outline-primary">Track Your Request</a>
+                            <a href="requests/makeRequest.php" class="btn btn-primary">Make Your Request Now</a>
+                            <a href="requests/trackRequest.php" class="btn btn-outline-primary">Track Your Request</a>
                         </div>
                     </div>
                 </div>

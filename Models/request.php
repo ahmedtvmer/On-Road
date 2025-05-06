@@ -1,5 +1,5 @@
 <?php
-require_once 'DbController.php';
+require_once __DIR__ . "/../Controllers/DbController.php";
 
 class Request
 {
@@ -109,19 +109,19 @@ class Request
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "INSERT INTO requests (client_id, mechanic_id, description, location, status, created_at) 
-                      VALUES ('$this->clientId', '$this->mechanicId', '$this->description', '$this->location', '$this->status', '$this->createdAt')";
+            $query = "INSERT INTO requests (client_id, description, location, status, createdAt) 
+                      VALUES ('$this->clientId', '$this->description', '$this->location', '$this->status', '$this->createdAt')";
             
             $result = $dbController->connection->query($query);
             
             if($result)
             {
                 $this->id = $dbController->connection->insert_id;
-                $dbController->closeConnection();
+                 
                 return true;
             }
             
-            $dbController->closeConnection();
+             
         }
         
         return false;
@@ -144,14 +144,14 @@ class Request
                 $this->description = $result[0]['description'];
                 $this->location = $result[0]['location'];
                 $this->status = $result[0]['status'];
-                $this->createdAt = $result[0]['created_at'];
-                $this->completedAt = $result[0]['completed_at'];
+                $this->createdAt = $result[0]['createdAt'];
+                $this->completedAt = $result[0]['completedAt'];
                 
-                $dbController->closeConnection();
+                 
                 return true;
             }
             
-            $dbController->closeConnection();
+             
         }
         
         return false;
@@ -168,12 +168,12 @@ class Request
                       description = '$this->description',
                       location = '$this->location',
                       status = '$this->status',
-                      completed_at = '$this->completedAt'
+                      completedAt = '$this->completedAt'
                       WHERE id = $this->id";
             
             $result = $dbController->connection->query($query);
             
-            $dbController->closeConnection();
+             
             return $result;
         }
         
@@ -188,7 +188,7 @@ class Request
             $query = "DELETE FROM requests WHERE id = $id";
             $result = $dbController->connection->query($query);
             
-            $dbController->closeConnection();
+             
             return $result;
         }
         
@@ -200,10 +200,10 @@ class Request
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM requests ORDER BY created_at DESC";
+            $query = "SELECT * FROM requests ORDER BY createdAt DESC";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
+             
             return $result;
         }
         
@@ -215,14 +215,52 @@ class Request
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM requests WHERE client_id = $clientId ORDER BY created_at DESC";
+            $query = "SELECT * FROM requests WHERE client_id = $clientId ORDER BY createdAt DESC";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
+             
             return $result;
         }
         
         return false;
+    }
+    
+    public function getActiveRequestsByMechanicId($mechanicId)
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "SELECT r.*, c.fullname as clientName 
+                      FROM requests r 
+                      LEFT JOIN clients c ON r.client_id = c.id
+                      WHERE r.mechanic_id = $mechanicId AND r.completedAt = '0000-00-00 00:00:00'
+                      ORDER BY r.createdAt DESC";
+            
+            $result = $dbController->executeQuery($query);
+            
+            return $result ? $result : array();
+        }
+        
+        return array();
+    }
+
+    public function getRandomPendingRequest()
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "SELECT r.*, c.fullname as clientName 
+                      FROM requests r 
+                      LEFT JOIN clients c ON r.client_id = c.id
+                      WHERE r.mechanic_id IS NULL OR r.mechanic_id = 0
+                      ORDER BY RAND() LIMIT 1";
+            
+            $result = $dbController->executeQuery($query);
+            
+            return $result && !empty($result) ? $result[0] : null;
+        }
+        
+        return null;
     }
     
     public function getRequestsByMechanicId($mechanicId)
@@ -230,10 +268,10 @@ class Request
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM requests WHERE mechanic_id = $mechanicId ORDER BY created_at DESC";
+            $query = "SELECT * FROM requests WHERE mechanic_id = $mechanicId ORDER BY createdAt DESC";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
+             
             return $result;
         }
         
@@ -245,10 +283,10 @@ class Request
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM requests WHERE status = '$status' ORDER BY created_at DESC";
+            $query = "SELECT * FROM requests WHERE status = '$status' ORDER BY createdAt DESC";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
+             
             return $result;
         }
         
@@ -293,7 +331,7 @@ class Request
             
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
+             
             if($result && count($result) > 0) {
                 return $result[0]['count'];
             }
@@ -301,5 +339,107 @@ class Request
         
         return 0;
     }
+
+    public function getActiveRequestsByClientId($clientId)
+{
+    $dbController = new DBController();
+    if($dbController->openConnection())
+    {
+        $query = "SELECT r.*, m.fullName as mechanicName 
+                  FROM requests r 
+                  LEFT JOIN mechanics m ON r.mechanic_id = m.id
+                  WHERE r.client_id = $clientId AND r.completedAt = '0000-00-00 00:00:00'
+                  ORDER BY r.createdAt DESC";
+        
+        $result = $dbController->executeQuery($query);
+        
+        return $result;
+    }
+    
+    return [];
+}
+
+public function getAllRequestsByClientId($clientId) {
+    $db = new DBController();
+    if ($db->openConnection()) {
+        $query = "SELECT r.*, m.fullname as mechanicName 
+                  FROM requests r 
+                  LEFT JOIN mechanics m ON r.mechanic_id = m.id 
+                  WHERE r.client_id = '$clientId' 
+                  ORDER BY r.createdAt DESC";
+        
+        $result = $db->executeQuery($query);
+        
+        // Simply return the result array - no need to check num_rows
+        return $result ? $result : array();
+    } else {
+        echo "Error in database connection";
+        return array();
+    }
+}
+
+/**
+ * Get all requests assigned to a mechanic (both active and completed)
+ */
+public function getAllRequestsByMechanicId($mechanicId) {
+    $db = new DBController();
+    if ($db->openConnection()) {
+        $query = "SELECT r.*, c.fullname as clientName 
+                  FROM requests r 
+                  LEFT JOIN clients c ON r.client_id = c.id 
+                  WHERE r.mechanic_id = '$mechanicId' 
+                  ORDER BY r.createdAt DESC";
+        
+        $result = $db->executeQuery($query);
+        
+        return $result ? $result : array();
+    } else {
+        echo "Error in database connection";
+        return array();
+    }
+}
+
+/**
+ * Get count of requests by mechanic ID and status
+ */
+public function getRequestsCountByMechanicAndStatus($mechanicId, $status)
+{
+    $dbController = new DBController();
+    if($dbController->openConnection())
+    {
+        $query = "SELECT COUNT(*) as count FROM requests 
+                  WHERE mechanic_id = $mechanicId AND status = '$status'";
+        
+        $result = $dbController->executeQuery($query);
+        
+        if($result && count($result) > 0) {
+            return $result[0]['count'];
+        }
+    }
+    
+    return 0;
+}
+
+/**
+ * Get count of completed requests by mechanic ID
+ */
+public function getCompletedRequestsCountByMechanic($mechanicId)
+{
+    $dbController = new DBController();
+    if($dbController->openConnection())
+    {
+        $query = "SELECT COUNT(*) as count FROM requests 
+                  WHERE mechanic_id = $mechanicId AND status = 'completed'";
+        
+        $result = $dbController->executeQuery($query);
+        
+        if($result && count($result) > 0) {
+            return $result[0]['count'];
+        }
+    }
+    
+    return 0;
+}
 }
 ?>
+

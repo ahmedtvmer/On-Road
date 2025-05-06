@@ -116,12 +116,10 @@ class Mechanic
                     $this->rating = $result[0]['rating'] ?? 0;
                     $this->totalReviews = $result[0]['totalReviews'] ?? 0;
                     
-                    $dbController->closeConnection();
                     return true;
                 }
             }
             
-            $dbController->closeConnection();
         }
         
         return false;
@@ -162,11 +160,9 @@ class Mechanic
             if($result)
             {
                 $this->id = $dbController->connection->insert_id;
-                $dbController->closeConnection();
                 return true;
             }
             
-            $dbController->closeConnection();
         }
         
         return false;
@@ -193,11 +189,9 @@ class Mechanic
                 $this->rating = $result[0]['rating'] ?? 0;
                 $this->totalReviews = $result[0]['totalReviews'] ?? 0;
                 
-                $dbController->closeConnection();
                 return true;
             }
             
-            $dbController->closeConnection();
         }
         
         return false;
@@ -222,7 +216,6 @@ class Mechanic
             
             $result = $dbController->connection->query($query);
             
-            $dbController->closeConnection();
             return $result;
         }
         
@@ -237,7 +230,6 @@ class Mechanic
             $query = "DELETE FROM mechanics WHERE id = $id";
             $result = $dbController->connection->query($query);
             
-            $dbController->closeConnection();
             return $result;
         }
         
@@ -252,7 +244,6 @@ class Mechanic
             $query = "SELECT * FROM mechanics";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
             return $result;
         }
         
@@ -267,7 +258,6 @@ class Mechanic
             $query = "SELECT * FROM mechanics WHERE location LIKE '%$location%'";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
             return $result;
         }
         
@@ -282,7 +272,6 @@ class Mechanic
             $query = "SELECT * FROM mechanics WHERE specialization LIKE '%$specialization%'";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
             return $result;
         }
         
@@ -297,7 +286,6 @@ class Mechanic
             $query = "SELECT * FROM mechanics WHERE username = '$username'";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
             return ($result && count($result) > 0);
         }
         
@@ -312,7 +300,6 @@ class Mechanic
             $query = "SELECT * FROM mechanics WHERE email = '$email'";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
             return ($result && count($result) > 0);
         }
         
@@ -362,7 +349,6 @@ class Mechanic
             $query = "SELECT * FROM mechanics WHERE totalReviews > 0 ORDER BY rating DESC LIMIT $limit";
             $result = $dbController->executeQuery($query);
             
-            $dbController->closeConnection();
             return $result;
         }
         
