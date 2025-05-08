@@ -25,45 +25,9 @@ $completedRequestsCount = $request->getCompletedRequestsCountByMechanic($mechani
 </head>
 <body>
     <div class="admin-section">
-        <div class="admin-sidebar" id="adminSidebar">
-            <div class="admin-profile">
-                <div class="admin-avatar">
-                    <img src="../root/img/avatar.png" alt="Mechanic" onerror="this.src='https://ui-avatars.com/api/?name=Vijay+Kumar&background=ff6b6b&color=fff'">
-                </div>
-                <h5 class="admin-name"><?php echo $_SESSION['fullname']; ?></h5>
-                <p class="admin-email"><?php echo $_SESSION['email']; ?></p>  
-            </div>
-            
-            <ul class="sidebar-menu">
-                <li>
-                    <a href="#" class="active">
-                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="requests/assignRequest.php">
-                        <i class="fas fa-file-alt"></i> Assign Request
-                    </a>
-                </li>
-                <li>
-                    <a href="reports/mechanicReport.php">
-                        <i class="fas fa-chart-bar"></i> Report
-                    </a>
-                </li>
-                <li>
-                    <a href="profile.php">
-                        <i class="fas fa-user-circle"></i> My Profile
-                    </a>
-                </li>
-                <li>
-                    <a href="../Controllers/LogoutController.php">
-                        <i class="fas fa-sign-out-alt"></i> Sign Out
-                    </a>
-                </li>
-            </ul>
-        </div>
+        <?php include_once 'includes/mechanicSidebar.php'; ?>
         
-       <?php include_once 'includes/navbar.php'; ?>
+        <?php include_once 'includes/navbar.php'; ?>
         
         
         <div class="admin-content-wrapper">
@@ -96,7 +60,7 @@ $completedRequestsCount = $request->getCompletedRequestsCountByMechanic($mechani
                         <div class="stat-card">
                             <div class="stat-label">Completed Request</div>
                             <div class="stat-value"><?php echo $completedRequestsCount; ?></div>
-                            <a href="requests/assignRequest.php" class="stat-link">View Detail</a>
+                            <a href="reports/mechanicReport.php" class="stat-link">View Detail</a>
                         </div>
                     </div>
                 </div>

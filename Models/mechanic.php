@@ -295,5 +295,21 @@ class Mechanic extends User
         
         return false;
     }
+    
+    public function getMechanicCount() 
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "SELECT COUNT(*) as count FROM mechanics";
+            $stmt = $dbController->connection->prepare($query);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $data = $result->fetch_assoc();
+            return $data['count'];
+        }
+        
+        return 0;
+    }
 }
 ?>

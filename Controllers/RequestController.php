@@ -1,12 +1,13 @@
 <?php
 require_once 'ValidationController.php';
-require_once '../Models/request.php';
-require_once '../Models/mechanic.php';
+require_once __DIR__ . '/../Models/request.php';
+require_once __DIR__ . '/../Models/mechanic.php';
 
 class RequestController {
     private $mechanicId;
     private $request;
     private $assignedRequests;
+    private $completedRequests; // Add this property
     private $successMessage = '';
     private $errorMessage = '';
     
@@ -19,14 +20,25 @@ class RequestController {
         $this->mechanicId = $_SESSION['user_id'];
         $this->request = new Request();
         $this->loadAssignedRequests();
+        $this->loadCompletedRequests(); // Add this method call
     }
     
     private function loadAssignedRequests() {
         $this->assignedRequests = $this->request->getActiveRequestsByMechanicId($this->mechanicId);
     }
     
+    // Add this new method
+    private function loadCompletedRequests() {
+        $this->completedRequests = $this->request->getCompletedRequestsByMechanicId($this->mechanicId);
+    }
+    
     public function getAssignedRequests() {
         return $this->assignedRequests;
+    }
+    
+    // Add this new method
+    public function getCompletedRequests() {
+        return $this->completedRequests;
     }
     
     public function getSuccessMessage() {

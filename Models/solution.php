@@ -1,5 +1,5 @@
 <?php
-require_once 'DbController.php';
+require_once __DIR__ . "/../Controllers/DbController.php";
 
 class Solution
 {
@@ -49,7 +49,7 @@ class Solution
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "INSERT INTO solution (request_id, description) 
+            $query = "INSERT INTO solutions (request_id, description) 
                       VALUES ('$this->requestId', '$this->description')";
             
             $result = $dbController->connection->query($query);
@@ -71,8 +71,8 @@ class Solution
     {
         $dbController = new DBController();
         if($dbController->openConnection())
-        {
-            $query = "SELECT * FROM solution WHERE id = $id";
+        {   
+            $query = "SELECT * FROM solutions WHERE id = $id";
             $result = $dbController->executeQuery($query);
             
             if($result && count($result) > 0)
@@ -96,7 +96,7 @@ class Solution
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "UPDATE solution SET 
+            $query = "UPDATE solutions SET 
                       request_id = '$this->requestId', 
                       description = '$this->description'
                       WHERE id = $this->id";
@@ -115,7 +115,7 @@ class Solution
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "DELETE FROM solution WHERE id = $id";
+            $query = "DELETE FROM solutions WHERE id = $id";
             $result = $dbController->connection->query($query);
             
              
@@ -130,7 +130,7 @@ class Solution
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM solution WHERE request_id = $requestId";
+            $query = "SELECT * FROM solutions WHERE request_id = $requestId";
             $result = $dbController->executeQuery($query);
             
             if($result && count($result) > 0)
@@ -154,7 +154,7 @@ class Solution
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM solution";
+            $query = "SELECT * FROM solutions";
             $result = $dbController->executeQuery($query);
             
              
@@ -169,11 +169,12 @@ class Solution
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM solution WHERE request_id = $requestId";
+            $query = "SELECT COUNT(*) as count FROM solutions WHERE request_id = $requestId";
             $result = $dbController->executeQuery($query);
             
-             
-            return ($result && count($result) > 0);
+            if($result && count($result) > 0) {
+                return $result[0]['count'] > 0;
+            }
         }
         
         return false;

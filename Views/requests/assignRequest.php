@@ -1,11 +1,15 @@
 <?php
 require_once '../../Controllers/RequestController.php';
+require_once '../../Models/solution.php';
 
 $requestController = new RequestController();
 $requestController->processRequests();
 $assignedRequests = $requestController->getAssignedRequests();
+$completedRequests = $requestController->getCompletedRequests(); // Add this line
 $successMessage = $requestController->getSuccessMessage();
 $errorMessage = $requestController->getErrorMessage();
+
+$solution = new Solution();
 ?>
 
 <!DOCTYPE html>
@@ -20,43 +24,7 @@ $errorMessage = $requestController->getErrorMessage();
 </head>
 <body>
     <div class="admin-section">
-        <div class="admin-sidebar" id="adminSidebar">
-            <div class="admin-profile">
-                <div class="admin-avatar">
-                    <img src="../../root/img/avatar.png" alt="Mechanic" onerror="this.src='https://ui-avatars.com/api/?name=<?php echo urlencode($_SESSION['fullname']); ?>&background=ff6b6b&color=fff'">
-                </div>
-                <h5 class="admin-name"><?php echo $_SESSION['fullname']; ?></h5>
-                <p class="admin-email"><?php echo $_SESSION['email']; ?></p>  
-            </div>
-            
-            <ul class="sidebar-menu">
-                <li>
-                    <a href="../mechanicDashboard.php">
-                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="active">
-                        <i class="fas fa-file-alt"></i> Assign Request
-                    </a>
-                </li>
-                <li>
-                    <a href="../reports/mechanicReport.php">
-                        <i class="fas fa-chart-bar"></i> Report
-                    </a>
-                </li>
-                <li>
-                    <a href="../profile.php">
-                        <i class="fas fa-user-circle"></i> My Profile
-                    </a>
-                </li>
-                <li>
-                    <a href="../../Controllers/LogoutController.php">
-                        <i class="fas fa-sign-out-alt"></i> Sign Out
-                    </a>
-                </li>
-            </ul>
-        </div>
+        <?php include_once '../includes/mechanicSidebar.php';?>
         
         <?php include_once '../includes/navbar.php'; ?>
         
@@ -112,6 +80,7 @@ $errorMessage = $requestController->getErrorMessage();
                                             <th>Location</th>
                                             <th>Status</th>
                                             <th>Created At</th>
+                                            <th>Solution</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -131,6 +100,19 @@ $errorMessage = $requestController->getErrorMessage();
                                                 </td>
                                                 <td><?php echo date('M d, Y H:i', strtotime($req['createdAt'])); ?></td>
                                                 <td>
+                                                    <?php 
+                                                    if ($solution->getSolutionByRequestId($req['id'])) {
+                                                        echo '<a href="../solutions/editMechanicSolution.php?request_id=' . $req['id'] . '" class="btn btn-sm btn-warning mt-2">
+                                                            <i class="fas fa-edit me-1"></i> Edit Solution
+                                                        </a>';
+                                                    } else {
+                                                        echo '<a href="../solutions/createSolution.php?request_id=' . $req['id'] . '" class="btn btn-sm btn-primary mt-2">
+                                                            <i class="fas fa-plus me-1"></i> Add Solution
+                                                        </a>';
+                                                    }
+                                                    ?>
+                                                </td>
+                                                <td>
                                                     <form method="POST" action="">
                                                         <input type="hidden" name="request_id" value="<?php echo $req['id']; ?>">
                                                         <button type="submit" name="complete_request" class="btn btn-sm btn-success">
@@ -142,6 +124,7 @@ $errorMessage = $requestController->getErrorMessage();
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
+                            </div>
                             </div>
                         </div>
                     </div>

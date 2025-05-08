@@ -319,6 +319,8 @@ class Request
         $this->status = "cancelled";
         return $this->updateRequest();
     }
+
+    
     
     public function getRequestsCount($status = null)
     {
@@ -438,6 +440,37 @@ public function getCompletedRequestsCountByMechanic($mechanicId)
     return 0;
 }
     
+    public function getRequestCountByStatus($status)
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "SELECT COUNT(*) as count FROM requests WHERE status = ?";
+            $stmt = $dbController->connection->prepare($query);
+            $stmt->bind_param("s", $status);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $data = $result->fetch_assoc();
+            return $data['count'];
+        }
+        
+        return 0;
+    }
+    
+    public function getAssignedOrdersCount($mechanicId) {
+        $dbController = new DBController();
+        if($dbController->openConnection()) {
+            $query = "SELECT COUNT(*) as count FROM requests WHERE mechanic_id = $mechanicId";
+            $result = $dbController->executeQuery($query);
+            
+            if($result && count($result) > 0) {
+                return $result[0]['count'];
+            }
+        }
+        
+        return 0;
+    }
+    
     public function getMechanicName()
     {
         if ($this->mechanicId) {
@@ -452,6 +485,41 @@ public function getCompletedRequestsCountByMechanic($mechanicId)
             }
         }
         return "Not assigned";
+    }
+
+    public function getClientName()
+    {
+        if ($this->clientId) {
+            $dbController = new DBController();
+            if ($dbController->openConnection()) {
+                $query = "SELECT fullname FROM clients WHERE id = $this->clientId";
+                $result = $dbController->executeQuery($query);
+                
+                if ($result && count($result) > 0) {
+                    return $result[0]['fullname'];
+                }
+            }
+        }
+        return "Not assigned";
+    }
+    
+    public function getCompletedRequestsByMechanicId($mechanicId)
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "SELECT r.*, c.fullname as clientName 
+                      FROM requests r 
+                      LEFT JOIN clients c ON r.client_id = c.id
+                      WHERE r.mechanic_id = $mechanicId AND r.status = 'completed'
+                      ORDER BY r.createdAt DESC";
+            
+            $result = $dbController->executeQuery($query);
+            
+            return $result ? $result : array();
+        }
+        
+        return array();
     }
 }
 ?>

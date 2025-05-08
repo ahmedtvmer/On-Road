@@ -5,18 +5,28 @@ require_once '../../Models/request.php';
 
 $successMessage = '';
 $errorMessage = '';
+$clientId = $_SESSION['user_id'];
 
+// Create request object to check for existing requests
+$request = new Request();
+$activeRequests = $request->getActiveRequestsByClientId($clientId);
+
+// Check if form was submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $clientId = $_SESSION['user_id'];
-    $description = $_POST['description'];
-    $location = $_POST['location'];
-    
-    $request = new Request("", $clientId, "", $description, $location);
-    
-    if ($request->createRequest()) {
-        $successMessage = "Your request has been submitted successfully. A mechanic will be assigned to you shortly.";
+    // Only process if client doesn't have active requests
+    if (empty($activeRequests)) {
+        $description = $_POST['description'];
+        $location = $_POST['location'];
+        
+        $request = new Request("", $clientId, "", $description, $location);
+        
+        if ($request->createRequest()) {
+            $successMessage = "Your request has been submitted successfully. A mechanic will be assigned to you shortly.";
+        } else {
+            $errorMessage = "Failed to submit your request. Please try again.";
+        }
     } else {
-        $errorMessage = "Failed to submit your request. Please try again.";
+        $errorMessage = "You already have an active request. Please wait until your current request is completed before submitting a new one.";
     }
 }
 ?>
@@ -54,23 +64,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </div>
                             <?php endif; ?>
                             
-                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                                <div class="mb-4">
-                                    <label for="description" class="form-label">Describe Your Problem</label>
-                                    <textarea class="form-control" id="description" name="description" rows="5" placeholder="Please describe the issue with your vehicle in detail..." required></textarea>
+                            <?php if (empty($activeRequests)): ?>
+                                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                                    <div class="mb-4">
+                                        <label for="description" class="form-label">Describe Your Problem</label>
+                                        <textarea class="form-control" id="description" name="description" rows="5" placeholder="Please describe the issue with your vehicle in detail..." required></textarea>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label for="location" class="form-label">Your Current Location</label>
+                                        <input type="text" class="form-control" id="location" name="location" placeholder="Enter your current location..." required>
+                                        <small class="text-muted">Please provide as much detail as possible about your location</small>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary btn-lg">Submit Request</button>
+                                        <a href="../home.php" class="btn btn-outline-secondary">Cancel</a>
+                                    </div>
+                                </form>
+                            <?php else: ?>
+                                <div class="alert alert-warning" role="alert">
+                                    <h5><i class="fas fa-exclamation-triangle me-2"></i>You already have an active request</h5>
+                                    <p>You can only have one active request at a time. Please wait until your current request is completed before submitting a new one.</p>
+                                    <div class="mt-3">
+                                        <a href="myRequests.php" class="btn btn-primary">View My Requests</a>
+                                    </div>
                                 </div>
-                                
-                                <div class="mb-4">
-                                    <label for="location" class="form-label">Your Current Location</label>
-                                    <input type="text" class="form-control" id="location" name="location" placeholder="Enter your current location..." required>
-                                    <small class="text-muted">Please provide as much detail as possible about your location</small>
-                                </div>
-                                
-                                <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-primary btn-lg">Submit Request</button>
-                                    <a href="home.php" class="btn btn-outline-secondary">Cancel</a>
-                                </div>
-                            </form>
+                            <?php endif; ?>
                         </div>
                     </div>
                     

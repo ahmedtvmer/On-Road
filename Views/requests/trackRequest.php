@@ -51,7 +51,6 @@ $activeRequests = $request->getActiveRequestsByClientId($clientId);
                                                 <th>Status</th>
                                                 <th>Created At</th>
                                                 <th>Assigned Mechanic</th>
-                                                <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -61,7 +60,7 @@ $activeRequests = $request->getActiveRequestsByClientId($clientId);
                                                     <td><?php echo $activeRequest['description']; ?></td>
                                                     <td><?php echo $activeRequest['location']; ?></td>
                                                     <td>
-                                                        <?php if (empty($activeRequest['mechanicId'])): ?>
+                                                        <?php if (empty($activeRequest['mechanic_id'])): ?>
                                                             <span class="badge bg-warning text-dark">Pending Assignment</span>
                                                         <?php else: ?>
                                                             <span class="badge bg-info">Mechanic Assigned</span>
@@ -69,16 +68,11 @@ $activeRequests = $request->getActiveRequestsByClientId($clientId);
                                                     </td>
                                                     <td><?php echo date('M d, Y H:i', strtotime($activeRequest['createdAt'])); ?></td>
                                                     <td>
-                                                        <?php if (empty($activeRequest['mechanicId'])): ?>
+                                                        <?php if (empty($activeRequest['mechanic_id'])): ?>
                                                             <span class="text-muted">Not assigned yet</span>
                                                         <?php else: ?>
-                                                            <?php echo $activeRequest['mechanicName']; ?>
+                                                            <a href="mechanicProfile.php?id=<?php echo $activeRequest['mechanic_id']; ?>"><?php echo $activeRequest['mechanicName']; ?></a>
                                                         <?php endif; ?>
-                                                    </td>
-                                                    <td>
-                                                        <a href="requestDetails.php?id=<?php echo $activeRequest['id']; ?>" class="btn btn-sm btn-outline-primary">
-                                                            <i class="fas fa-eye"></i> View Details
-                                                        </a>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>

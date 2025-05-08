@@ -61,11 +61,11 @@ $allRequests = $request->getAllRequestsByClientId($clientId);
                                                     <td><?php echo $request['description']; ?></td>
                                                     <td><?php echo $request['location']; ?></td>
                                                     <td>
-                                                        <?php if (empty($request['mechanic_id']) && empty($request['completed_at'])): ?>
+                                                        <?php if (empty($request['mechanic_id']) && $request['completedAt'] == '0000-00-00 00:00:00'): ?>
                                                             <span class="badge bg-warning text-dark">Pending Assignment</span>
-                                                        <?php elseif (!empty($request['mechanic_id']) && empty($request['completedAt'])): ?>
+                                                        <?php elseif (!empty($request['mechanic_id']) && $request['completedAt'] == '0000-00-00 00:00:00'): ?>
                                                             <span class="badge bg-info">Mechanic Assigned</span>
-                                                        <?php elseif (!empty($request['completedAt'])): ?>
+                                                        <?php elseif ($request['completedAt'] != '0000-00-00 00:00:00'): ?>
                                                             <span class="badge bg-success">Completed</span>
                                                         <?php endif; ?>
                                                     </td>

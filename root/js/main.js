@@ -47,9 +47,9 @@ $(document).ready(function() {
         }
         
         if (selectedRole === 'mechanic') {
-            const specialization = $('#specialization').val().trim();
-            const location = $('#Location').val().trim();
-            const experience = $('#experience').val().trim();
+            const specialization = $('#specialization').length ? $('#specialization').val().trim() : '';
+            const location = $('#location').length ? $('#location').val().trim() : '';
+            const experience = $('#experience').length ? $('#experience').val().trim() : '';
             
             if (specialization === '') {
                 $('#specialization').addClass('is-invalid');
@@ -57,7 +57,7 @@ $(document).ready(function() {
             }
             
             if (location === '') {
-                $('#Location').addClass('is-invalid');
+                $('#location').addClass('is-invalid');
                 isValid = false;
             }
             
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (selectedRoleInput.value === 'mechanic') {
             const specialization = document.getElementById('specialization').value;
-            const location = document.getElementById('location').value;
+            const location = document.getElementById('location').value;  
             const experience = document.getElementById('experience').value;
             
             if (!specialization || !location || !experience) {

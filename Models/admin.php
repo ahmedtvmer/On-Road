@@ -1,6 +1,6 @@
 <?php
 require_once 'user.php';
-require_once '../Controllers/DbController.php';
+require_once __DIR__ . "/../Controllers/DbController.php";
 
 class Admin extends User
 {

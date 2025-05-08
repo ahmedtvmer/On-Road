@@ -122,7 +122,7 @@ class Feedback
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM feedback WHERE id = $id";
+            $query = "SELECT * FROM feedbacks WHERE id = $id";
             $result = $dbController->executeQuery($query);
             
             if($result && count($result) > 0)
@@ -150,7 +150,7 @@ class Feedback
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "UPDATE feedback SET 
+            $query = "UPDATE feedbacks SET 
                       request_id = '$this->requestId', 
                       client_id = '$this->clientId', 
                       mechanic_id = '$this->mechanicId',
@@ -180,7 +180,7 @@ class Feedback
         {
             $this->getFeedbackById($id);
             
-            $query = "DELETE FROM feedback WHERE id = $id";
+            $query = "DELETE FROM feedbacks WHERE id = $id";
             $result = $dbController->connection->query($query);
             
              
@@ -201,7 +201,7 @@ class Feedback
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM feedback ORDER BY created_at DESC";
+            $query = "SELECT * FROM feedbacks ORDER BY created_at DESC";
             $result = $dbController->executeQuery($query);
             
              
@@ -216,7 +216,7 @@ class Feedback
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM feedback WHERE request_id = $requestId";
+            $query = "SELECT * FROM feedbacks WHERE request_id = $requestId";
             $result = $dbController->executeQuery($query);
             
             if($result && count($result) > 0)
@@ -225,9 +225,9 @@ class Feedback
                 $this->requestId = $result[0]['request_id'];
                 $this->clientId = $result[0]['client_id'];
                 $this->mechanicId = $result[0]['mechanic_id'];
-                $this->createdAt = $result[0]['created_at'];
-                $this->costRating = $result[0]['cost_rating'];
-                $this->serviceRating = $result[0]['service_rating'];
+                $this->createdAt = $result[0]['createdAt'];
+                $this->costRating = $result[0]['costRating'];
+                $this->serviceRating = $result[0]['serviceRating'];
                 
                  
                 return true;
@@ -244,7 +244,7 @@ class Feedback
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM feedback WHERE client_id = $clientId ORDER BY created_at DESC";
+            $query = "SELECT * FROM feedbacks WHERE client_id = $clientId ORDER BY created_at DESC";
             $result = $dbController->executeQuery($query);
             
              
@@ -259,7 +259,7 @@ class Feedback
         $dbController = new DBController();
         if($dbController->openConnection())
         {
-            $query = "SELECT * FROM feedback WHERE mechanic_id = $mechanicId ORDER BY created_at DESC";
+            $query = "SELECT * FROM feedbacks WHERE mechanic_id = $mechanicId ORDER BY created_at DESC";
             $result = $dbController->executeQuery($query);
             
              
@@ -302,7 +302,7 @@ class Feedback
             if($dbController->openConnection())
             {
                 $query = "SELECT AVG((cost_rating + service_rating) / 2) as avg_rating, COUNT(*) as count 
-                          FROM feedback 
+                          FROM feedbacks 
                           WHERE mechanic_id = $this->mechanicId";
                 $result = $dbController->executeQuery($query);
                 

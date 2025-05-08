@@ -1,6 +1,9 @@
 <?php
 require_once '../../Controllers/ValidationController.php';
-ValidationController::validateSession('client');
+if($_SESSION['role'] == 'admin' || $_SESSION['role'] == 'client')
+    ValidationController::validateSession($_SESSION['role']);
+else
+    ValidationController::validateSession('client');
 require_once '../../Models/mechanic.php';
 
 $errorMessage = '';
@@ -91,6 +94,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                                     </div>
                                 </div>
                                 
+                                <?php if ($_SESSION['role'] == 'client'): ?>
                                 <hr>
                                 
                                 <div class="text-center mt-3">
@@ -98,6 +102,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                                         <i class="fas fa-arrow-left me-2"></i> Back to My Requests
                                     </a>
                                 </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endif; ?>

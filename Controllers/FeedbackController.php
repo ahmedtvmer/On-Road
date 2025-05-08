@@ -1,7 +1,7 @@
 <?php
 require_once 'ValidationController.php';
-require_once '../Models/request.php';
-require_once '../Models/feedback.php';
+require_once __DIR__ . '/../Models/request.php';
+require_once __DIR__ . '/../Models/feedback.php';
 
 class FeedbackController {
     private $clientId;

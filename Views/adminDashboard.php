@@ -1,6 +1,20 @@
 <?php
 require_once '../Controllers/ValidationController.php';
 ValidationController::validateSession('admin');
+
+require_once '../Models/request.php';
+require_once '../Models/mechanic.php';
+require_once '../Models/client.php';
+
+$request = new Request();
+$mechanic = new Mechanic();
+$client = new Client();
+
+$newRequests = $request->getRequestCountByStatus('pending');
+$inProgressRequests = $request->getRequestCountByStatus('assigned');
+$completedRequests = $request->getRequestCountByStatus('completed');
+$totalMechanics = $mechanic->getMechanicCount();
+$totalClients = $client->getClientCount();
 ?>
 
 <!DOCTYPE html>
@@ -17,58 +31,7 @@ ValidationController::validateSession('admin');
 </head>
 <body>
     <div class="admin-section">
-        <div class="admin-sidebar" id="adminSidebar">
-            <div class="admin-profile">
-                <div class="admin-avatar">
-                    <img src="root/img/avatar.png" alt="Admin" onerror="this.src='https://ui-avatars.com/api/?name=Autodoc+Admin&background=ff6b6b&color=fff'">
-                </div>
-                <h5 class="admin-name"><?php echo $_SESSION['fullname']; ?></h5>
-                <p class="admin-email"><?php echo $_SESSION['email']; ?></p>  
-            </div>
-            
-            <ul class="sidebar-menu">
-                <li>
-                    <a href="#" class="active">
-                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fas fa-user"></i> Driver
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fas fa-file-alt"></i> Request
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fas fa-reply"></i> Mechanic Response
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fas fa-search"></i> Search
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fas fa-chart-bar"></i> Report
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fas fa-user-circle"></i> My Profile
-                    </a>
-                </li>
-                <li>
-                    <a href="../Controllers/LogoutController.php">
-                        <i class="fas fa-sign-out-alt"></i> Sign Out
-                    </a>
-                </li>
-            </ul>
-        </div>
+        <?php include_once 'includes/adminsidebar.php'; ?>
         
         <?php include_once 'includes/navbar.php'; ?>
         
@@ -87,49 +50,43 @@ ValidationController::validateSession('admin');
                     <div class="col-md-3">
                         <div class="stat-card">
                             <div class="stat-label">New Requests</div>
-                            <div class="stat-value">1</div>
-                            <a href="#" class="stat-link">View Detail</a>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-label">Approved Requests</div>
-                            <div class="stat-value">1</div>
-                            <a href="#" class="stat-link">View Detail</a>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-label">Rejected Requests</div>
-                            <div class="stat-value">0</div>
-                            <a href="#" class="stat-link">View Detail</a>
+                            <div class="stat-value"><?php echo $newRequests; ?></div>
+                            <a href="requests/adminRequests.php?status=pending" class="stat-link">View Detail</a>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="stat-card">
                             <div class="stat-label">Driver on the way</div>
-                            <div class="stat-value">0</div>
-                            <a href="#" class="stat-link">View Detail</a>
+                            <div class="stat-value"><?php echo $inProgressRequests; ?></div>
+                            <a href="requests/adminRequests.php?status=assigned" class="stat-link">View Detail</a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-label">Completed Requests</div>
+                            <div class="stat-value"><?php echo $completedRequests; ?></div>
+                            <a href="requests/adminRequests.php?status=completed" class="stat-link">View Detail</a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Mechanics</div>
+                            <div class="stat-value"><?php echo $totalMechanics; ?></div>
+                            <a href="mechanics.php" class="stat-link">View Detail</a>
                         </div>
                     </div>
                 </div>
                 
-                <div class="row">
+                <div class="row mt-4">
                     <div class="col-md-3">
                         <div class="stat-card">
-                            <div class="stat-label">Completed Requests</div>
-                            <div class="stat-value">1</div>
-                            <a href="#" class="stat-link">View Detail</a>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-label">Total Drivers</div>
-                            <div class="stat-value">6</div>
-                            <a href="#" class="stat-link">View Detail</a>
+                            <div class="stat-label">Total Clients</div>
+                            <div class="stat-value"><?php echo $totalClients; ?></div>
+                            <a href="clients.php" class="stat-link">View Detail</a>
                         </div>
                     </div>
                 </div>
+            
             </div>
         </div>
     </div>

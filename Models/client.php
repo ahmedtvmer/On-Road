@@ -150,5 +150,21 @@ class Client extends User
     {
         return self::ROLE;
     }
+    
+    public function getClientCount() 
+    {
+        $dbController = new DBController();
+        if($dbController->openConnection())
+        {
+            $query = "SELECT COUNT(*) as count FROM clients";
+            $stmt = $dbController->connection->prepare($query);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $data = $result->fetch_assoc();
+            return $data['count'];
+        }
+        
+        return 0;
+    }
 }
 ?>
