@@ -110,21 +110,6 @@ class Solution
         return false;
     }
     
-    public function deleteSolution($id)
-    {
-        $dbController = new DBController();
-        if($dbController->openConnection())
-        {
-            $query = "DELETE FROM solutions WHERE id = $id";
-            $result = $dbController->connection->query($query);
-            
-             
-            return $result;
-        }
-        
-        return false;
-    }
-    
     public function getSolutionByRequestId($requestId)
     {
         $dbController = new DBController();
@@ -144,21 +129,6 @@ class Solution
             }
             
              
-        }
-        
-        return false;
-    }
-    
-    public function getAllSolutions()
-    {
-        $dbController = new DBController();
-        if($dbController->openConnection())
-        {
-            $query = "SELECT * FROM solutions";
-            $result = $dbController->executeQuery($query);
-            
-             
-            return $result;
         }
         
         return false;

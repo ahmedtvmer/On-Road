@@ -7,13 +7,11 @@ $userRole = $isLoggedIn ? $_SESSION['role'] : '';
 $currentPath = $_SERVER['PHP_SELF'];
 $rootPath = '';
 
-// Check if we're in a subdirectory of Views
 if (strpos($currentPath, '/Views/') !== false) {
     $subfolderCount = substr_count(substr($currentPath, strpos($currentPath, '/Views/') + 7), '/');
     $rootPath = str_repeat('../', $subfolderCount);
 }
 
-// Determine the home page based on user role
 $homePage = '../index.php';
 if ($isLoggedIn) {
     if ($userRole == 'admin') {

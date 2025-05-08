@@ -1,7 +1,5 @@
 <?php
-// Determine the base path based on the current file location
 $basePath = '';
-// Check if we're in a subdirectory of Views
 if (strpos($_SERVER['PHP_SELF'], '/Views/') !== false) {
     $pathParts = explode('/Views/', $_SERVER['PHP_SELF']);
     if (isset($pathParts[1])) {
@@ -10,7 +8,6 @@ if (strpos($_SERVER['PHP_SELF'], '/Views/') !== false) {
     }
 }
 
-// Root path for assets
 $rootPath = $basePath . '../';
 ?>
 

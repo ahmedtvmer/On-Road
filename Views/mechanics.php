@@ -15,7 +15,7 @@ $request = new Request();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ON-ROAD BREAKDOWN ASSISTANCE | Drivers</title>
+    <title>ON-ROAD BREAKDOWN ASSISTANCE | Mechanics</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../root/css/main.css">
@@ -45,14 +45,14 @@ $request = new Request();
                 <nav aria-label="breadcrumb" class="mb-4">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="adminDashboard.php"><i class="fas fa-home"></i></a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Drivers</li>
+                        <li class="breadcrumb-item active" aria-current="page">Mechanics</li>
                     </ol>
                 </nav>
                 
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4>All Mechanics</h4>
                     <div class="d-flex">
-                        <input type="text" id="searchDriver" class="form-control me-2" placeholder="Search driver...">
+                        <input type="text" id="searchDriver" class="form-control me-2" placeholder="Search mechanic...">
                         <select id="filterLocation" class="form-select me-2">
                             <option value="">All Locations</option>
                             <?php
@@ -97,7 +97,7 @@ $request = new Request();
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Driver</th>
+                                        <th>Mechanic</th>
                                         <th>Location</th>
                                         <th>Specialization</th>
                                         <th>Experience</th>
@@ -169,7 +169,7 @@ $request = new Request();
                                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                 </div>
                                                                 <div class="modal-body">
-                                                                    Are you sure you want to delete driver <strong><?php echo $mechanic['fullName']; ?></strong>?
+                                                                    Are you sure you want to delete mechanic <strong><?php echo $mechanic['fullName']; ?></strong>?
                                                                     This action cannot be undone.
                                                                 </div>
                                                                 <div class="modal-footer">

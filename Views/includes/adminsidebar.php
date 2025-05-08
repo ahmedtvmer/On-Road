@@ -1,5 +1,4 @@
 <?php
-// Determine the base path based on the current file location
 $basePath = '';
 if (strpos($_SERVER['PHP_SELF'], '/Views/requests/') !== false || 
     strpos($_SERVER['PHP_SELF'], '/Views/reports/') !== false) {

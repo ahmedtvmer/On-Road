@@ -130,40 +130,12 @@ class Admin extends User
         return false;
     }
     
-    public function getAllAdmins()
-    {
-        $dbController = new DBController();
-        if($dbController->openConnection())
-        {
-            $query = "SELECT * FROM admins";
-            $result = $dbController->executeQuery($query);
-            
-            return $result;
-        }
-        
-        return false;
-    }
-    
     public function verifyAdminCode($code)
     {
         $dbController = new DBController();
         if($dbController->openConnection())
         {
             $query = "SELECT * FROM admin_codes WHERE code = '$code' AND is_used = 0";
-            $result = $dbController->executeQuery($query);
-            
-            return ($result && count($result) > 0);
-        }
-        
-        return false;
-    }
-    
-    public function checkUsernameExists($username)
-    {
-        $dbController = new DBController();
-        if($dbController->openConnection())
-        {
-            $query = "SELECT * FROM admins WHERE username = '$username'";
             $result = $dbController->executeQuery($query);
             
             return ($result && count($result) > 0);

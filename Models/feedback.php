@@ -196,21 +196,6 @@ class Feedback
         return false;
     }
     
-    public function getAllFeedback()
-    {
-        $dbController = new DBController();
-        if($dbController->openConnection())
-        {
-            $query = "SELECT * FROM feedbacks ORDER BY created_at DESC";
-            $result = $dbController->executeQuery($query);
-            
-             
-            return $result;
-        }
-        
-        return false;
-    }
-    
     public function getFeedbackByRequestId($requestId)
     {
         $dbController = new DBController();

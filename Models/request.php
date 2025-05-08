@@ -398,9 +398,6 @@ public function getAllRequestsByMechanicId($mechanicId) {
     }
 }
 
-/**
- * Get count of requests by mechanic ID and status
- */
 public function getRequestsCountByMechanicAndStatus($mechanicId, $status)
 {
     $dbController = new DBController();
@@ -419,9 +416,6 @@ public function getRequestsCountByMechanicAndStatus($mechanicId, $status)
     return 0;
 }
 
-/**
- * Get count of completed requests by mechanic ID
- */
 public function getCompletedRequestsCountByMechanic($mechanicId)
 {
     $dbController = new DBController();

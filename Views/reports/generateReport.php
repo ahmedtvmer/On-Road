@@ -346,12 +346,5 @@ $reportDate = date('F d, Y');
             </a>
         </div>
     </div>
-
-    <script>
-        // Auto-print when page loads (optional)
-        // window.onload = function() {
-        //     window.print();
-        // }
-    </script>
 </body>
 </html>

@@ -282,20 +282,6 @@ class Mechanic extends User
         return $this->updateMechanic();
     }
     
-    public function getTopRatedMechanics($limit = 5)
-    {
-        $dbController = new DBController();
-        if($dbController->openConnection())
-        {
-            $query = "SELECT * FROM mechanics WHERE totalReviews > 0 ORDER BY rating DESC LIMIT $limit";
-            $result = $dbController->executeQuery($query);
-            
-            return $result;
-        }
-        
-        return false;
-    }
-    
     public function getMechanicCount() 
     {
         $dbController = new DBController();

@@ -4,14 +4,13 @@ ValidationController::validateSession('admin');
 require_once '../../Models/request.php';
 require_once '../../Models/solution.php';
 require_once '../../Models/feedback.php';
-require_once '../../Models/client.php'; // Changed from user.php to client.php
+require_once '../../Models/client.php';
 require_once '../../Models/mechanic.php';
 
-// Get all requests with their associated data
 $request = new Request();
 $solution = new Solution();
 $feedback = new Feedback();
-$client = new Client(); // Changed variable name from $user to $client
+$client = new Client();
 $mechanic = new Mechanic();
 
 $allRequests = $request->getAllRequests();

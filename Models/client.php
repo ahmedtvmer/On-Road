@@ -104,48 +104,6 @@ class Client extends User
         return false;
     }
     
-    public function getAllClients()
-    {
-        $dbController = new DBController();
-        if($dbController->openConnection())
-        {
-            $query = "SELECT * FROM clients";
-            $result = $dbController->executeQuery($query);
-            
-            return $result;
-        }
-        
-        return false;
-    }
-    
-    public function checkUsernameExists($username)
-    {
-        $dbController = new DBController();
-        if($dbController->openConnection())
-        {
-            $query = "SELECT * FROM clients WHERE username = '$username'";
-            $result = $dbController->executeQuery($query);
-            
-            return ($result && count($result) > 0);
-        }
-        
-        return false;
-    }
-    
-    public function checkEmailExists($email)
-    {
-        $dbController = new DBController();
-        if($dbController->openConnection())
-        {
-            $query = "SELECT * FROM clients WHERE email = '$email'";
-            $result = $dbController->executeQuery($query);
-            
-            return ($result && count($result) > 0);
-        }
-        
-        return false;
-    }
-    
     public function getRole()
     {
         return self::ROLE;
