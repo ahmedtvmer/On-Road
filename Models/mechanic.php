@@ -11,9 +11,9 @@ class Mechanic extends User
     private $totalReviews;
     const ROLE = 'mechanic';
     
-    public function __construct($id = "", $fullName = "", $email = "", $username = "", $password = "", $location = "", $specialization = "", $experience = "", $rating = 0, $totalReviews = 0)
+    public function __construct($id = "", $fullName = "", $email = "", $username = "", $password = "", $location = "", $specialization = "", $experience = "", $rating = 0, $totalReviews = 0, ?DBController $dbController = null)
     {
-        parent::__construct($id, $username, $password, $fullName, $email);
+        parent::__construct($id, $username, $password, $fullName, $email, $dbController);
         $this->location = $location;
         $this->specialization = $specialization;
         $this->experience = $experience;
@@ -53,11 +53,10 @@ class Mechanic extends User
     
     public function login($username, $password)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM mechanics WHERE username = '$username'";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result && count($result) > 0)
             {
@@ -85,8 +84,7 @@ class Mechanic extends User
     {
         $hashedPassword = $this->hashPassword($this->getPassword());
         
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "INSERT INTO mechanics (
                 fullName, email, username, password, location, specialization, experience, rating, totalReviews, role
@@ -96,11 +94,11 @@ class Mechanic extends User
             )";
     
             
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
             if($result)
             {
-                $this->setId($dbController->connection->insert_id);
+                $this->setId($this->dbController->connection->insert_id);
                 return true;
             }
             
@@ -111,11 +109,10 @@ class Mechanic extends User
     
     public function getMechanicById($id)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM mechanics WHERE id = $id";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result && count($result) > 0)
             {
@@ -140,8 +137,7 @@ class Mechanic extends User
     
     public function updateMechanic()
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "UPDATE mechanics SET 
                       fullName = '".$this->getFullName()."', 
@@ -155,7 +151,7 @@ class Mechanic extends User
                       totalReviews = $this->totalReviews
                       WHERE id = ".$this->getId();    
             
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
             return $result;
         }
@@ -165,11 +161,10 @@ class Mechanic extends User
     
     public function deleteMechanic($id)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "DELETE FROM mechanics WHERE id = $id";
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
             return $result;
         }
@@ -179,11 +174,10 @@ class Mechanic extends User
     
     public function getAllMechanics()
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM mechanics";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             return $result;
         }
@@ -193,11 +187,10 @@ class Mechanic extends User
     
     public function getMechanicsByLocation($location)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM mechanics WHERE location LIKE '%$location%'";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             return $result;
         }
@@ -207,11 +200,10 @@ class Mechanic extends User
     
     public function getMechanicsBySpecialization($specialization)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM mechanics WHERE specialization LIKE '%$specialization%'";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             return $result;
         }
@@ -221,11 +213,10 @@ class Mechanic extends User
     
     public function checkUsernameExists($username)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM mechanics WHERE username = '$username'";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             return ($result && count($result) > 0);
         }
@@ -235,11 +226,10 @@ class Mechanic extends User
     
     public function checkEmailExists($email)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM mechanics WHERE email = '$email'";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             return ($result && count($result) > 0);
         }
@@ -284,11 +274,10 @@ class Mechanic extends User
     
     public function getMechanicCount() 
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT COUNT(*) as count FROM mechanics";
-            $stmt = $dbController->connection->prepare($query);
+            $stmt = $this->dbController->connection->prepare($query);
             $stmt->execute();
             $result = $stmt->get_result();
             $data = $result->fetch_assoc();

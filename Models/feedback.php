@@ -11,8 +11,9 @@ class Feedback
     private $createdAt;
     private $costRating;
     private $serviceRating;
+    private $dbController;
     
-    public function __construct($id = "", $requestId = "", $clientId = "", $mechanicId = "", $createdAt = "", $costRating = 0, $serviceRating = 0)
+    public function __construct($id = "", $requestId = "", $clientId = "", $mechanicId = "", $createdAt = "", $costRating = 0, $serviceRating = 0, ?DBController $dbController = null)
     {
         $this->id = $id;
         $this->requestId = $requestId;
@@ -21,6 +22,7 @@ class Feedback
         $this->createdAt = $createdAt ? $createdAt : date('Y-m-d H:i:s');
         $this->costRating = $costRating;
         $this->serviceRating = $serviceRating;
+        $this->dbController = $dbController ?? new DBController();
     }
     
     public function getId()
@@ -95,17 +97,16 @@ class Feedback
     
     public function createFeedback()
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "INSERT INTO feedbacks (request_id, client_id, mechanic_id, createdAt, costRating, serviceRating) 
                       VALUES ('$this->requestId', '$this->clientId', '$this->mechanicId', '$this->createdAt', '$this->costRating', '$this->serviceRating')";
             
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
             if($result)
             {
-                $this->id = $dbController->connection->insert_id;
+                $this->id = $this->dbController->connection->insert_id;
                 $this->updateMechanicRating();
                 
                 return true;
@@ -119,11 +120,10 @@ class Feedback
     
     public function getFeedbackById($id)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM feedbacks WHERE id = $id";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result && count($result) > 0)
             {
@@ -147,8 +147,7 @@ class Feedback
     
     public function updateFeedback()
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "UPDATE feedbacks SET 
                       request_id = '$this->requestId', 
@@ -158,7 +157,7 @@ class Feedback
                       service_rating = '$this->serviceRating'
                       WHERE id = $this->id";
             
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
              
             
@@ -175,13 +174,12 @@ class Feedback
     
     public function deleteFeedback($id)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $this->getFeedbackById($id);
             
             $query = "DELETE FROM feedbacks WHERE id = $id";
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
              
             
@@ -198,11 +196,10 @@ class Feedback
     
     public function getFeedbackByRequestId($requestId)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM feedbacks WHERE request_id = $requestId";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result && count($result) > 0)
             {
@@ -226,11 +223,10 @@ class Feedback
     
     public function getFeedbackByClientId($clientId)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM feedbacks WHERE client_id = $clientId ORDER BY created_at DESC";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
              
             return $result;
@@ -241,11 +237,10 @@ class Feedback
     
     public function getFeedbackByMechanicId($mechanicId)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM feedbacks WHERE mechanic_id = $mechanicId ORDER BY created_at DESC";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
              
             return $result;
@@ -256,11 +251,10 @@ class Feedback
     
     public function checkFeedbackExists($requestId)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM feedbacks WHERE request_id = $requestId";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
              
             return ($result && count($result) > 0);
@@ -283,13 +277,12 @@ class Feedback
     private function updateMechanicRatingAfterDeletion()
     {
         if($this->mechanicId) {
-            $dbController = new DBController();
-            if($dbController->openConnection())
+            if($this->dbController->openConnection())
             {
                 $query = "SELECT AVG((cost_rating + service_rating) / 2) as avg_rating, COUNT(*) as count 
                           FROM feedbacks 
                           WHERE mechanic_id = $this->mechanicId";
-                $result = $dbController->executeQuery($query);
+                $result = $this->dbController->executeQuery($query);
                 
                 if($result && count($result) > 0) {
                     $mechanic = new Mechanic();

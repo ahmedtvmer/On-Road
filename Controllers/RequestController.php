@@ -7,27 +7,26 @@ class RequestController {
     private $mechanicId;
     private $request;
     private $assignedRequests;
-    private $completedRequests; // Add this property
+    private $completedRequests;
     private $successMessage = '';
     private $errorMessage = '';
     
-    public function __construct() {
+    public function __construct(?Request $request = null) {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
         
         ValidationController::validateSession('mechanic');
         $this->mechanicId = $_SESSION['user_id'];
-        $this->request = new Request();
+        $this->request = $request ?? new Request();
         $this->loadAssignedRequests();
-        $this->loadCompletedRequests(); // Add this method call
+        $this->loadCompletedRequests();
     }
     
     private function loadAssignedRequests() {
         $this->assignedRequests = $this->request->getActiveRequestsByMechanicId($this->mechanicId);
     }
     
-    // Add this new method
     private function loadCompletedRequests() {
         $this->completedRequests = $this->request->getCompletedRequestsByMechanicId($this->mechanicId);
     }
@@ -36,7 +35,6 @@ class RequestController {
         return $this->assignedRequests;
     }
     
-    // Add this new method
     public function getCompletedRequests() {
         return $this->completedRequests;
     }

@@ -20,7 +20,6 @@ class LogoutController
         }
         
         session_destroy();
-        
         header("Location: ../Views/login.php");
         exit();
     }

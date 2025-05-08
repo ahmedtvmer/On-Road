@@ -1,21 +1,23 @@
 <?php
 require_once __DIR__ . "/../Controllers/DbController.php";
 
-class User
+abstract class User
 {
     protected $id;
     protected $username;
     protected $password;
     protected $fullName;
     protected $email;
+    protected $dbController;
     
-    public function __construct($id = "", $username = "", $password = "", $fullName = "", $email = "")
+    public function __construct($id = "", $username = "", $password = "", $fullName = "", $email = "", ?DBController $dbController = null)
     {
         $this->id = $id;
         $this->username = $username;
         $this->password = $password;
         $this->fullName = $fullName;
         $this->email = $email;
+        $this->dbController = $dbController ?? new DBController();
     }
     
     public function getId()
@@ -73,14 +75,9 @@ class User
         return password_hash($password, PASSWORD_DEFAULT);
     }
     
-    protected function verifyPassword($password, $hashedPassword)
+    protected function verifyPassword($inputPassword, $hashedPassword)
     {
-        return password_verify($password, $hashedPassword);
-    }
-    
-    public function login($username, $password)
-    {
-        return false;
+        return password_verify($inputPassword, $hashedPassword);
     }
     
     protected function updateUser($table)
@@ -127,5 +124,8 @@ class User
         
         return false;
     }
+    abstract public function login($username, $password);
+    abstract public function register();
+    abstract public function getRole();
 }
 ?>

@@ -9,10 +9,10 @@ class MechanicController {
     private $successMessage;
     private $errorMessage;
     
-    public function __construct() {
+    public function __construct(?Mechanic $mechanic = null, ?Request $request = null) {
         ValidationController::validateSession('admin');
-        $this->mechanic = new Mechanic();
-        $this->request = new Request();
+        $this->mechanic = $mechanic ?? new Mechanic();
+        $this->request = $request ?? new Request();
         $this->successMessage = '';
         $this->errorMessage = '';
         

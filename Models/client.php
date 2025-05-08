@@ -6,18 +6,17 @@ class Client extends User
 {
     const ROLE = 'client';
     
-    public function __construct($id = "", $fullName = "", $email = "", $username = "", $password = "")
+    public function __construct($id = "", $fullName = "", $email = "", $username = "", $password = "", ?DBController $dbController = null)
     {
-        parent::__construct($id, $username, $password, $fullName, $email);
+        parent::__construct($id, $username, $password, $fullName, $email, $dbController);
     }
     
     public function login($username, $password)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM clients WHERE username = '$username'";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result && count($result) > 0)
             {
@@ -26,7 +25,7 @@ class Client extends User
                     $this->setFullName($result[0]['fullName']);
                     $this->setEmail($result[0]['email']);
                     $this->setUsername($result[0]['username']);
-                    $this->setPassword($result[0]['password']); 
+                    $this->setPassword($result[0]['password']);
                     
                     return true;
                 }

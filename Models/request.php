@@ -11,8 +11,9 @@ class Request
     private $status;
     private $createdAt;
     private $completedAt;
+    private $dbController;
     
-    public function __construct($id = "", $clientId = "", $mechanicId = "", $description = "", $location = "", $status = "pending", $createdAt = "", $completedAt = "")
+    public function __construct($id = "", $clientId = "", $mechanicId = "", $description = "", $location = "", $status = "", $createdAt = "", $completedAt = "", ?DBController $dbController = null)
     {
         $this->id = $id;
         $this->clientId = $clientId;
@@ -22,6 +23,7 @@ class Request
         $this->status = $status;
         $this->createdAt = $createdAt ? $createdAt : date('Y-m-d H:i:s');
         $this->completedAt = $completedAt;
+        $this->dbController = $dbController ?? new DBController();
     }
     
     public function getId()
@@ -106,17 +108,16 @@ class Request
     
     public function createRequest()
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "INSERT INTO requests (client_id, description, location, status, createdAt) 
                       VALUES ('$this->clientId', '$this->description', '$this->location', '$this->status', '$this->createdAt')";
             
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
             if($result)
             {
-                $this->id = $dbController->connection->insert_id;
+                $this->id = $this->dbController->connection->insert_id;
                  
                 return true;
             }
@@ -130,11 +131,10 @@ class Request
     public function getRequestById($id)
     {
 
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM requests WHERE id = $id";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result && count($result) > 0)
             {
@@ -159,8 +159,7 @@ class Request
     
     public function updateRequest()
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "UPDATE requests SET 
                       client_id = '$this->clientId', 
@@ -171,7 +170,7 @@ class Request
                       completedAt = '$this->completedAt'
                       WHERE id = $this->id";
             
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
              
             return $result;
@@ -182,11 +181,10 @@ class Request
     
     public function deleteRequest($id)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "DELETE FROM requests WHERE id = $id";
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
              
             return $result;
@@ -197,11 +195,10 @@ class Request
     
     public function getAllRequests()
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM requests ORDER BY createdAt DESC";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
              
             return $result;
@@ -212,11 +209,10 @@ class Request
     
     public function getRequestsByClientId($clientId)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM requests WHERE client_id = $clientId ORDER BY createdAt DESC";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
              
             return $result;
@@ -227,8 +223,7 @@ class Request
     
     public function getActiveRequestsByMechanicId($mechanicId)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT r.*, c.fullname as clientName 
                       FROM requests r 
@@ -236,7 +231,7 @@ class Request
                       WHERE r.mechanic_id = $mechanicId AND r.completedAt = '0000-00-00 00:00:00'
                       ORDER BY r.createdAt DESC";
             
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             return $result ? $result : array();
         }
@@ -246,8 +241,7 @@ class Request
 
     public function getRandomPendingRequest($mechanicLocation)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT r.*, c.fullname as clientName 
                       FROM requests r 
@@ -256,7 +250,7 @@ class Request
                       AND r.location = '$mechanicLocation'
                       ORDER BY RAND() LIMIT 1";
             
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             return $result && !empty($result) ? $result[0] : null;
         }
@@ -266,11 +260,10 @@ class Request
     
     public function getRequestsByMechanicId($mechanicId)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM requests WHERE mechanic_id = $mechanicId ORDER BY createdAt DESC";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
              
             return $result;
@@ -281,11 +274,10 @@ class Request
     
     public function getRequestsByStatus($status)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM requests WHERE status = '$status' ORDER BY createdAt DESC";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
              
             return $result;
@@ -324,15 +316,14 @@ class Request
     
     public function getRequestsCount($status = null)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT COUNT(*) as count FROM requests";
             if($status) {
                 $query .= " WHERE status = '$status'";
             }
             
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
              
             if($result && count($result) > 0) {
@@ -345,8 +336,7 @@ class Request
 
     public function getActiveRequestsByClientId($clientId)
 {
-    $dbController = new DBController();
-    if($dbController->openConnection())
+    if($this->dbController->openConnection())
     {
         $query = "SELECT r.*, m.fullName as mechanicName 
                   FROM requests r 
@@ -354,7 +344,7 @@ class Request
                   WHERE r.client_id = $clientId AND r.completedAt = '0000-00-00 00:00:00'
                   ORDER BY r.createdAt DESC";
         
-        $result = $dbController->executeQuery($query);
+        $result = $this->dbController->executeQuery($query);
         
         return $result;
     }
@@ -363,15 +353,14 @@ class Request
 }
 
 public function getAllRequestsByClientId($clientId) {
-    $dbController = new DBController();
-    if ($dbController->openConnection()) {
+    if ($this->dbController->openConnection()) {
         $query = "SELECT r.*, m.fullname as mechanicName 
                   FROM requests r 
                   LEFT JOIN mechanics m ON r.mechanic_id = m.id 
                   WHERE r.client_id = '$clientId' 
                   ORDER BY r.createdAt DESC";
         
-        $result = $dbController->executeQuery($query);
+        $result = $this->dbController->executeQuery($query);
         
         return $result ? $result : array();
     } else {
@@ -381,15 +370,14 @@ public function getAllRequestsByClientId($clientId) {
 }
 
 public function getAllRequestsByMechanicId($mechanicId) {
-    $db = new DBController();
-    if ($db->openConnection()) {
+    if ($this->dbController->openConnection()) {
         $query = "SELECT r.*, c.fullname as clientName 
                   FROM requests r 
                   LEFT JOIN clients c ON r.client_id = c.id 
                   WHERE r.mechanic_id = '$mechanicId' 
                   ORDER BY r.createdAt DESC";
         
-        $result = $db->executeQuery($query);
+        $result = $this->dbController->executeQuery($query);
         
         return $result ? $result : array();
     } else {
@@ -400,13 +388,12 @@ public function getAllRequestsByMechanicId($mechanicId) {
 
 public function getRequestsCountByMechanicAndStatus($mechanicId, $status)
 {
-    $dbController = new DBController();
-    if($dbController->openConnection())
+    if($this->dbController->openConnection())
     {
         $query = "SELECT COUNT(*) as count FROM requests 
                   WHERE mechanic_id = $mechanicId AND status = '$status'";
         
-        $result = $dbController->executeQuery($query);
+        $result = $this->dbController->executeQuery($query);
         
         if($result && count($result) > 0) {
             return $result[0]['count'];
@@ -418,13 +405,12 @@ public function getRequestsCountByMechanicAndStatus($mechanicId, $status)
 
 public function getCompletedRequestsCountByMechanic($mechanicId)
 {
-    $dbController = new DBController();
-    if($dbController->openConnection())
+    if($this->dbController->openConnection())
     {
         $query = "SELECT COUNT(*) as count FROM requests 
                   WHERE mechanic_id = $mechanicId AND status = 'completed'";
         
-        $result = $dbController->executeQuery($query);
+        $result = $this->dbController->executeQuery($query);
         
         if($result && count($result) > 0) {
             return $result[0]['count'];
@@ -436,11 +422,10 @@ public function getCompletedRequestsCountByMechanic($mechanicId)
     
     public function getRequestCountByStatus($status)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT COUNT(*) as count FROM requests WHERE status = ?";
-            $stmt = $dbController->connection->prepare($query);
+            $stmt = $this->dbController->connection->prepare($query);
             $stmt->bind_param("s", $status);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -452,10 +437,9 @@ public function getCompletedRequestsCountByMechanic($mechanicId)
     }
     
     public function getAssignedOrdersCount($mechanicId) {
-        $dbController = new DBController();
-        if($dbController->openConnection()) {
+        if($this->dbController->openConnection()) {
             $query = "SELECT COUNT(*) as count FROM requests WHERE mechanic_id = $mechanicId";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result && count($result) > 0) {
                 return $result[0]['count'];
@@ -468,10 +452,9 @@ public function getCompletedRequestsCountByMechanic($mechanicId)
     public function getMechanicName()
     {
         if ($this->mechanicId) {
-            $dbController = new DBController();
-            if ($dbController->openConnection()) {
+            if ($this->dbController->openConnection()) {
                 $query = "SELECT fullname FROM mechanics WHERE id = $this->mechanicId";
-                $result = $dbController->executeQuery($query);
+                $result = $this->dbController->executeQuery($query);
                 
                 if ($result && count($result) > 0) {
                     return $result[0]['fullname'];
@@ -484,10 +467,9 @@ public function getCompletedRequestsCountByMechanic($mechanicId)
     public function getClientName()
     {
         if ($this->clientId) {
-            $dbController = new DBController();
-            if ($dbController->openConnection()) {
+            if ($this->dbController->openConnection()) {
                 $query = "SELECT fullname FROM clients WHERE id = $this->clientId";
-                $result = $dbController->executeQuery($query);
+                $result = $this->dbController->executeQuery($query);
                 
                 if ($result && count($result) > 0) {
                     return $result[0]['fullname'];
@@ -499,8 +481,7 @@ public function getCompletedRequestsCountByMechanic($mechanicId)
     
     public function getCompletedRequestsByMechanicId($mechanicId)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT r.*, c.fullname as clientName 
                       FROM requests r 
@@ -508,7 +489,7 @@ public function getCompletedRequestsCountByMechanic($mechanicId)
                       WHERE r.mechanic_id = $mechanicId AND r.status = 'completed'
                       ORDER BY r.createdAt DESC";
             
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             return $result ? $result : array();
         }

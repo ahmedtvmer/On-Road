@@ -7,9 +7,9 @@ class Admin extends User
     private $adminCode;
     const ROLE = 'admin';
     
-    public function __construct($id = "", $fullName = "", $email = "", $username = "", $adminCode = "", $password = "")
+    public function __construct($id = "", $fullName = "", $email = "", $username = "", $adminCode = "", $password = "", DBController $dbController = null)
     {
-        parent::__construct($id, $username, $password, $fullName, $email);
+        parent::__construct($id, $username, $password, $fullName, $email, $dbController);
         $this->adminCode = $adminCode;
     }
     
@@ -25,11 +25,10 @@ class Admin extends User
     
     public function login($username, $password)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM admins WHERE username = '$username'";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result && count($result) > 0)
             {
