@@ -52,17 +52,16 @@ class Admin extends User
     {
         $hashedPassword = $this->hashPassword($this->getPassword());
         
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "INSERT INTO admins (fullName, email, username, adminCode, password, role) 
                       VALUES ('".$this->getFullName()."', '".$this->getEmail()."', '".$this->getUsername()."', '$this->adminCode', '$hashedPassword', '" . self::ROLE . "')";
             
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
             if($result)
             {
-                $this->setId($dbController->connection->insert_id);
+                $this->setId($this->dbController->connection->insert_id);
                 return true;
             }
         }
@@ -72,11 +71,10 @@ class Admin extends User
     
     public function getAdminById($id)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM admins WHERE id = $id";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result && count($result) > 0)
             {
@@ -94,10 +92,9 @@ class Admin extends User
         return false;
     }
     
-    public function updateAdmin()
+    public function updateUser()
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "UPDATE admins SET 
                       fullName = '".$this->getFullName()."', 
@@ -107,7 +104,7 @@ class Admin extends User
                       password = '".$this->getPassword()."' 
                       WHERE id = ".$this->getId();
             
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
             return $result;
         }
@@ -115,13 +112,12 @@ class Admin extends User
         return false;
     }
     
-    public function deleteAdmin($id)
+    public function deleteUser($id)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "DELETE FROM admins WHERE id = $id";
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
             return $result;
         }
@@ -131,11 +127,10 @@ class Admin extends User
     
     public function verifyAdminCode($code)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM admin_codes WHERE code = '$code' AND is_used = 0";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             return ($result && count($result) > 0);
         }

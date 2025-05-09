@@ -57,13 +57,7 @@ class ProfileController {
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
             $deleteSuccess = false;
             
-            if ($this->userRole == 'client') {
-                $deleteSuccess = $this->user->deleteClient($this->userId);
-            } elseif ($this->userRole == 'mechanic') {
-                $deleteSuccess = $this->user->deleteMechanic($this->userId);
-            } elseif ($this->userRole == 'admin') {
-                $deleteSuccess = $this->user->deleteAdmin($this->userId);
-            }
+            $deleteSuccess = $this->user->deleteUser($this->userId);
             
             if ($deleteSuccess) {
                 header("Location: ../Controllers/LogoutController.php?deleted=1");
@@ -103,13 +97,8 @@ class ProfileController {
             }
             
             $updateSuccess = false;
-            if ($this->userRole == 'client') {
-                $updateSuccess = $this->user->updateClient();
-            } elseif ($this->userRole == 'mechanic') {
-                $updateSuccess = $this->user->updateMechanic();
-            } elseif ($this->userRole == 'admin') {
-                $updateSuccess = $this->user->updateAdmin();
-            }
+            $updateSuccess = $this->user->updateUser();
+            
             
             if ($updateSuccess) {
                 $this->successMessage = "Profile updated successfully!";

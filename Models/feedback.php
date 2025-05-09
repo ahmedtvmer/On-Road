@@ -289,7 +289,7 @@ class Feedback
                     if($mechanic->getMechanicById($this->mechanicId)) {
                         $mechanic->setRating($result[0]['avg_rating'] ?? 0);
                         $mechanic->setTotalReviews($result[0]['count'] ?? 0);
-                        $mechanic->updateMechanic();
+                        $mechanic->updateUser();
                     }
                 }
                 

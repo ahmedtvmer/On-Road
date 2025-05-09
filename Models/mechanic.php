@@ -135,7 +135,7 @@ class Mechanic extends User
         return false;
     }
     
-    public function updateMechanic()
+    public function updateUser()
     {
         if($this->dbController->openConnection())
         {
@@ -159,7 +159,7 @@ class Mechanic extends User
         return false;
     }
     
-    public function deleteMechanic($id)
+    public function deleteUser($id)
     {
         if($this->dbController->openConnection())
         {
@@ -211,32 +211,6 @@ class Mechanic extends User
         return false;
     }
     
-    public function checkUsernameExists($username)
-    {
-        if($this->dbController->openConnection())
-        {
-            $query = "SELECT * FROM mechanics WHERE username = '$username'";
-            $result = $this->dbController->executeQuery($query);
-            
-            return ($result && count($result) > 0);
-        }
-        
-        return false;
-    }
-    
-    public function checkEmailExists($email)
-    {
-        if($this->dbController->openConnection())
-        {
-            $query = "SELECT * FROM mechanics WHERE email = '$email'";
-            $result = $this->dbController->executeQuery($query);
-            
-            return ($result && count($result) > 0);
-        }
-        
-        return false;
-    }
-    
     public function getRole()
     {
         return self::ROLE;
@@ -269,7 +243,7 @@ class Mechanic extends User
         $this->totalReviews++;
         $this->rating = $this->totalReviews > 0 ? $newTotalPoints / $this->totalReviews : 0;
         
-        return $this->updateMechanic();
+        return $this->updateUser();
     }
     
     public function getMechanicCount() 

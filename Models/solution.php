@@ -6,12 +6,14 @@ class Solution
     private $id;
     private $requestId;
     private $description;
+    private $dbController;
     
-    public function __construct($id = "", $requestId = "", $description = "")
+    public function __construct($id = "", $requestId = "", $description = "", DBController $dbController = null)
     {
         $this->id = $id;
         $this->requestId = $requestId;
         $this->description = $description;
+        $this->dbController = $dbController?? new DBController();
     }
     
     public function getId()
@@ -46,17 +48,17 @@ class Solution
     
     public function createSolution()
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+         
+        if($this->dbController->openConnection())
         {
             $query = "INSERT INTO solutions (request_id, description) 
                       VALUES ('$this->requestId', '$this->description')";
             
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
             if($result)
             {
-                $this->id = $dbController->connection->insert_id;
+                $this->id = $this->dbController->connection->insert_id;
                  
                 return true;
             }
@@ -69,11 +71,11 @@ class Solution
     
     public function getSolutionById($id)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+         
+        if($this->dbController->openConnection())
         {   
             $query = "SELECT * FROM solutions WHERE id = $id";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result && count($result) > 0)
             {
@@ -93,15 +95,15 @@ class Solution
     
     public function updateSolution()
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+         
+        if($this->dbController->openConnection())
         {
             $query = "UPDATE solutions SET 
                       request_id = '$this->requestId', 
                       description = '$this->description'
                       WHERE id = $this->id";
             
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
              
             return $result;
@@ -112,11 +114,11 @@ class Solution
     
     public function getSolutionByRequestId($requestId)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+         
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM solutions WHERE request_id = $requestId";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result && count($result) > 0)
             {
@@ -136,11 +138,11 @@ class Solution
     
     public function checkSolutionExists($requestId)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+         
+        if($this->dbController->openConnection())
         {
             $query = "SELECT COUNT(*) as count FROM solutions WHERE request_id = $requestId";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result && count($result) > 0) {
                 return $result[0]['count'] > 0;

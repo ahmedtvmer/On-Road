@@ -80,27 +80,6 @@ abstract class User
         return password_verify($inputPassword, $hashedPassword);
     }
     
-    protected function updateUser($table)
-    {
-        $dbController = new DBController();
-        if($dbController->openConnection())
-        {
-            $query = "UPDATE $table SET 
-                      username = '$this->username',
-                      full_name = '$this->fullName',
-                      email = '$this->email',
-                      WHERE id = '$this->id'";
-            
-            $result = $dbController->executeQuery($query);
-            
-            if($result)
-            {
-                return true;
-            }
-        }
-        
-        return false;
-    }
     
     public function updatePassword($newPassword, $table)
     {
@@ -124,6 +103,8 @@ abstract class User
         
         return false;
     }
+    abstract public function updateUser();
+    abstract public function deleteUser($id);
     abstract public function login($username, $password);
     abstract public function register();
     abstract public function getRole();

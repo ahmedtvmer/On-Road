@@ -84,12 +84,12 @@ class Client extends User
         return false;
     }
     
-    public function updateClient()
+    public function updateUser()
     {
         return $this->updateUser('clients');
     }
     
-    public function deleteClient($id)
+    public function deleteUser($id)
     {
         $dbController = new DBController();
         if($dbController->openConnection())
