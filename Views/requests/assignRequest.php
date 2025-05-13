@@ -9,7 +9,7 @@ $completedRequests = $requestController->getCompletedRequests(); // Add this lin
 $successMessage = $requestController->getSuccessMessage();
 $errorMessage = $requestController->getErrorMessage();
 
-$solution = new Solution();
+$solution = new Solution("", "", "");
 ?>
 
 <!DOCTYPE html>

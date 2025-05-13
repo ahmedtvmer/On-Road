@@ -84,7 +84,21 @@ class Client extends User
     
     public function updateUser()
     {
-        return $this->updateUser('clients');
+        if($this->dbController->openConnection())
+        {
+            $query = "UPDATE clients SET 
+                      fullName = '".$this->getFullName()."', 
+                      email = '".$this->getEmail()."', 
+                      username = '".$this->getUsername()."', 
+                      password = '".$this->getPassword()."'
+                      WHERE id = ".$this->getId();    
+            
+            $result = $this->dbController->connection->query($query);
+            
+            return $result;
+        }
+        
+        return false;
     }
     
     public function deleteUser($id)
@@ -104,19 +118,18 @@ class Client extends User
     {
         return self::ROLE;
     }
-    
-    public function getClientCount() 
+
+    public function getClientCount()
     {
-        if($this->dbController->openConnection())
-        {
+        if ($this->dbController->openConnection()) {
             $query = "SELECT COUNT(*) as count FROM clients";
-            $stmt = $this->dbController->connection->prepare($query);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $data = $result->fetch_assoc();
-            return $data['count'];
+            $result = $this->dbController->connection->query($query);
+            if ($result) {
+                $row = $result->fetch_assoc();
+                return $row['count'];
+            }
         }
-        
+
         return 0;
     }
 }

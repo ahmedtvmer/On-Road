@@ -5,7 +5,7 @@ require_once '../../Models/request.php';
 require_once '../../Models/solution.php';
 
 $request = new Request();
-$solution = new Solution();
+$solution = new Solution("", "" , "");
 $allRequests = $request->getAllRequests();
 ?>
 

@@ -59,13 +59,14 @@ class DBController
             }
         }
         $result = $this->connection->query($query);
-        if($result)
+        
+        if($result && $result !== true)
         {
             return $result->fetch_all(MYSQLI_ASSOC);
         }
         else
         {
-            return false;
+            return $result;
         }
     }
 

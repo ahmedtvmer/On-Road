@@ -8,13 +8,11 @@ $errorMessage = '';
 $requestData = null;
 $solutionData = null;
 
-// Check if request_id is provided
 if (isset($_GET['request_id']) && !empty($_GET['request_id'])) {
     $requestId = $_GET['request_id'];
     $request = new Request();
-    $solution = new Solution();
+    $solution = new Solution("", $requestId, "");
     
-    // Get request details
     if ($request->getRequestById($requestId)) {
         $requestData = [
             'id' => $request->getId(),
@@ -25,7 +23,6 @@ if (isset($_GET['request_id']) && !empty($_GET['request_id'])) {
             'status' => $request->getStatus()
         ];
         
-        // Get solution details
         if ($solution->getSolutionByRequestId($requestId)) {
             $solutionData = [
                 'id' => $solution->getId(),

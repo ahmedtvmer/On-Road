@@ -11,9 +11,8 @@ $solutionData = null;
 // Check if solution ID is provided
 if (isset($_GET['id']) && !empty($_GET['id'])) {
     $solutionId = $_GET['id'];
-    $solution = new Solution();
+    $solution = new Solution("", $requestId, "");
     
-    // Get solution details
     if ($solution->getSolutionById($solutionId)) {
         $solutionData = [
             'id' => $solution->getId(),
@@ -21,7 +20,6 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
             'description' => $solution->getDescription()
         ];
         
-        // Get request details for reference
         $request = new Request();
         if ($request->getRequestById($solution->getRequestId())) {
             $requestData = [
@@ -47,14 +45,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_solution'])) {
     if (empty($description)) {
         $errorMessage = "Solution description is required.";
     } else {
-        $solution = new Solution();
+        $solution = new Solution("", $requestId, $description);
         
         if ($solution->getSolutionById($solutionId)) {
-            $solution->setDescription($description);
             
             if ($solution->updateSolution()) {
                 $successMessage = "Solution updated successfully!";
-                // Refresh solution data
                 $solutionData['description'] = $description;
             } else {
                 $errorMessage = "Failed to update solution. Please try again.";

@@ -8,7 +8,7 @@ require_once '../../Models/client.php';
 require_once '../../Models/mechanic.php';
 
 $request = new Request();
-$solution = new Solution();
+$solution = new Solution("", "", "");
 $feedback = new Feedback();
 $client = new Client();
 $mechanic = new Mechanic();

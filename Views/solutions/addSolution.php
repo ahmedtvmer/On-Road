@@ -22,7 +22,7 @@ if (isset($_GET['request_id']) && !empty($_GET['request_id'])) {
             'status' => $request->getStatus()
         ];
         
-        $solution = new Solution();
+        $solution = new Solution("", $requestId, "");
         if ($solution->checkSolutionExists($requestId)) {
             header("Location: viewSolution.php?request_id=" . $requestId);
             exit();

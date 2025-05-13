@@ -85,14 +85,13 @@ abstract class User
     {
         $hashedPassword = $this->hashPassword($newPassword);
         
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "UPDATE $table SET 
                       password = '$hashedPassword'
                       WHERE id = '$this->id'";
             
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result)
             {

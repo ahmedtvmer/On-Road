@@ -22,7 +22,7 @@ if (isset($_GET['request_id']) && !empty($_GET['request_id'])) {
                 'clientName' => $request->getClientName()
             ];
             
-            $solution = new Solution();
+            $solution = new Solution("", $requestId, "");
             if ($solution->getSolutionByRequestId($requestId)) {
                 header("Location: editMechanicSolution.php?request_id=$requestId");
                 exit;
@@ -44,9 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['create_solution'])) {
     if (empty($description)) {
         $errorMessage = "Solution description is required.";
     } else {
-        $solution = new Solution();
-        $solution->setRequestId($requestId);
-        $solution->setDescription($description);
+        $solution = new Solution("", $requestId, $description);
         
         if ($solution->createSolution()) {
             $successMessage = "Solution created successfully!";

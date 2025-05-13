@@ -7,7 +7,6 @@ require_once '../../Models/feedback.php';
 require_once '../../Models/client.php';
 require_once '../../Models/mechanic.php';
 
-// Check if request ID is provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: adminReports.php");
     exit;
@@ -15,38 +14,30 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $requestId = $_GET['id'];
 
-// Initialize models
 $request = new Request();
-$solution = new Solution();
+$solution = new Solution("", $requestId, "");
 $feedback = new Feedback();
 $client = new Client();
 $mechanic = new Mechanic();
 
-// Get request details
 $requestResult = $request->getRequestById($requestId);
 
-// If request not found, redirect back
 if (!$requestResult) {
     header("Location: adminReports.php");
     exit;
 }
 
-// Get client details
 $clientResult = $client->getClientById($request->getClientId());
 
-// Get mechanic details if assigned
 $mechanicResult = null;
 if (!empty($request->getMechanicId())) {
     $mechanicResult = $mechanic->getMechanicById($request->getMechanicId());
 }
 
-// Get solution if exists
 $solutionResult = $solution->getSolutionByRequestId($requestId);
 
-// Get feedback if exists
 $feedbackResult = $feedback->getFeedbackByRequestId($requestId);
 
-// Generate current date for the report
 $reportDate = date('F d, Y');
 ?>
 

@@ -8,12 +8,13 @@ class Solution
     private $description;
     private $dbController;
     
-    public function __construct($id = "", $requestId = "", $description = "", DBController $dbController = null)
+    public function __construct($id, $requestId, $description, ?DBController $dbController = null)
     {
+        
         $this->id = $id;
         $this->requestId = $requestId;
         $this->description = $description;
-        $this->dbController = $dbController?? DBController::getInstance();
+        $this->dbController = $dbController ?? DBController::getInstance();
     }
     
     public function getId()
@@ -31,39 +32,26 @@ class Solution
         return $this->description;
     }
     
-    public function setId($id)
+    public function withDescription($newDescription)
     {
-        $this->id = $id;
-    }
-    
-    public function setRequestId($requestId)
-    {
-        $this->requestId = $requestId;
-    }
-    
-    public function setDescription($description)
-    {
-        $this->description = $description;
+        return new self($this->id, $this->requestId, $newDescription, $this->dbController);
     }
     
     public function createSolution()
     {
-         
         if($this->dbController->openConnection())
         {
-            $query = "INSERT INTO solutions (request_id, description) 
-                      VALUES ('$this->requestId', '$this->description')";
-            
-            $result = $this->dbController->connection->query($query);
+            $stmt = $this->dbController->connection->prepare("INSERT INTO solutions (request_id, description) VALUES (?, ?)");
+            $stmt->bind_param("is", $this->requestId, $this->description);
+            $result = $stmt->execute();
             
             if($result)
             {
                 $this->id = $this->dbController->connection->insert_id;
-                 
+                $stmt->close();
                 return true;
             }
-            
-             
+            $stmt->close();
         }
         
         return false;
@@ -92,7 +80,7 @@ class Solution
         
         return false;
     }
-    
+
     public function updateSolution()
     {
          
@@ -135,7 +123,7 @@ class Solution
         
         return false;
     }
-    
+
     public function checkSolutionExists($requestId)
     {
          
