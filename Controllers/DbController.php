@@ -7,14 +7,25 @@ class DBController
     private $dbPassword;
     private $dbName;
     public $connection;
-
-    public function __construct($dbHost = "localhost", $dbUser = "root", $dbPassword = "", $dbName = "on-road")
+    
+    private static $instance = null;
+    
+    private function __construct($dbHost = "localhost", $dbUser = "root", $dbPassword = "", $dbName = "on-road")
     {
         $this->dbHost = $dbHost;
         $this->dbUser = $dbUser;
         $this->dbPassword = $dbPassword;
         $this->dbName = $dbName;
     }
+    
+    public static function getInstance($dbHost = "localhost", $dbUser = "root", $dbPassword = "", $dbName = "on-road")
+    {
+        if (self::$instance === null) {
+            self::$instance = new self($dbHost, $dbUser, $dbPassword, $dbName);
+        }
+        return self::$instance;
+    }
+    
 
     public function openConnection()
     {

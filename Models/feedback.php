@@ -22,7 +22,7 @@ class Feedback
         $this->createdAt = $createdAt ? $createdAt : date('Y-m-d H:i:s');
         $this->costRating = $costRating;
         $this->serviceRating = $serviceRating;
-        $this->dbController = $dbController ?? new DBController();
+        $this->dbController = $dbController ?? DBController::getInstance();
     }
     
     public function getId()

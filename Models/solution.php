@@ -13,7 +13,7 @@ class Solution
         $this->id = $id;
         $this->requestId = $requestId;
         $this->description = $description;
-        $this->dbController = $dbController?? new DBController();
+        $this->dbController = $dbController?? DBController::getInstance();
     }
     
     public function getId()

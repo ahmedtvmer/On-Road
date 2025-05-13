@@ -13,7 +13,7 @@ class RegisterController
     public function __construct($dbController = null)
     {
         $this->error = "";
-        $this->dbController = $dbController ?? new DBController();
+        $this->dbController = $dbController ?? DBController::getInstance();
     }
 
     private function isUsernameExist($username){

@@ -31,7 +31,6 @@ class MechanicController {
         if (isset($_POST['mechanic_id']) && !empty($_POST['mechanic_id'])) {
             $mechanicId = $_POST['mechanic_id'];
             
-            // Check if mechanic has active requests
             $activeRequests = $this->request->getActiveRequestsByMechanicId($mechanicId);
             
             if (count($activeRequests) > 0) {
@@ -41,8 +40,7 @@ class MechanicController {
                 exit();
             }
             
-            // Delete mechanic
-            if ($this->mechanic->deleteMechanic($mechanicId)) {
+            if ($this->mechanic->deleteUser($mechanicId)) {
                 $this->successMessage = "Mechanic deleted successfully.";
                 $_SESSION['success_message'] = $this->successMessage;
             } else {
@@ -69,7 +67,6 @@ class MechanicController {
     }
 }
 
-// Initialize controller if this file is accessed directly
 if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     $controller = new MechanicController();
 }

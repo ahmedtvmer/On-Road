@@ -39,22 +39,21 @@ class Client extends User
     {
         $hashedPassword = $this->hashPassword($this->getPassword());
         
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "INSERT INTO clients (fullName, email, username, password, role) 
                       VALUES ('".$this->getFullName()."', '".$this->getEmail()."', '".$this->getUsername()."', '$hashedPassword', '" . self::ROLE . "')";
             
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
             if($result)
             {
-                $this->setId($dbController->connection->insert_id);
+                $this->setId($this->dbController->connection->insert_id);
                 return true;
             }
             else
             {
-                echo "Database Error: " . $dbController->connection->error;
+                echo "Database Error: " . $this->dbController->connection->error;
             }
         }
         
@@ -63,11 +62,10 @@ class Client extends User
     
     public function getClientById($id)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT * FROM clients WHERE id = $id";
-            $result = $dbController->executeQuery($query);
+            $result = $this->dbController->executeQuery($query);
             
             if($result && count($result) > 0)
             {
@@ -91,11 +89,10 @@ class Client extends User
     
     public function deleteUser($id)
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "DELETE FROM clients WHERE id = $id";
-            $result = $dbController->connection->query($query);
+            $result = $this->dbController->connection->query($query);
             
             return $result;
         }
@@ -110,11 +107,10 @@ class Client extends User
     
     public function getClientCount() 
     {
-        $dbController = new DBController();
-        if($dbController->openConnection())
+        if($this->dbController->openConnection())
         {
             $query = "SELECT COUNT(*) as count FROM clients";
-            $stmt = $dbController->connection->prepare($query);
+            $stmt = $this->dbController->connection->prepare($query);
             $stmt->execute();
             $result = $stmt->get_result();
             $data = $result->fetch_assoc();

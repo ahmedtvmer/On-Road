@@ -23,7 +23,7 @@ class Request
         $this->status = $status;
         $this->createdAt = $createdAt ? $createdAt : date('Y-m-d H:i:s');
         $this->completedAt = $completedAt;
-        $this->dbController = $dbController ?? new DBController();
+        $this->dbController = $dbController ?? DBController::getInstance();
     }
     
     public function getId()

@@ -17,7 +17,7 @@ abstract class User
         $this->password = $password;
         $this->fullName = $fullName;
         $this->email = $email;
-        $this->dbController = $dbController ?? new DBController();
+        $this->dbController = $dbController ?? DBController::getInstance();
     }
     
     public function getId()

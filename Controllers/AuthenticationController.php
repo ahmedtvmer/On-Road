@@ -5,7 +5,7 @@ class AuthenticationController {
     private $dbController;
     
     public function __construct(?DBController $dbController = null) {
-        $this->dbController = $dbController ?? new DBController();
+        $this->dbController = $dbController ?? DBController::getInstance();
     }
     
     public function login($email, $password) {
